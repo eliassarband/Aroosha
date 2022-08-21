@@ -1,0 +1,295 @@
+﻿@using Kendo.Mvc.UI.Fluent;
+@using System.Collections.Generic;
+
+@model IEnumerable<Aroosha.Models.MarketModel>
+
+@{
+    Layout = "_ToolbarLayout";
+}
+
+@section HeadContent
+{
+    <style>
+
+
+        .Market {
+            background-image: url("../Icon/Market.png");
+        }
+
+        .Phase {
+            background-image: url("../Icon/Phase.png");
+        }
+
+        .Zone {
+            background-image: url("../Icon/Zone.png");
+        }
+
+        .Corridor {
+            background-image: url("../Icon/Corridor.png");
+        }
+
+        .Shop {
+            background-image: url("../Icon/Shop.png");
+        }
+    </style>
+}
+
+<div id="container">
+
+
+    
+        @using (Html.BeginForm("MarketStructures", "Market", FormMethod.Post, new { id = "FormMarketStructures", @class = "form" }))
+        {
+            <div class="row">
+                <div class="col-12 col-justify-content-right">
+                    @(Html.Kendo().TreeView()
+                            .Name("TreeViewMarketStructures")
+                            .AutoScroll(true)
+                            .HtmlAttributes(new
+                            {
+                                style = "font-family:Vazir,Tahoma;font-size:12px;"
+                            })
+                            .Items(items => {
+                                foreach (var mainMarket in Model)
+                                {
+                                    items.Add()
+                                    .Text("سازمان : " + mainMarket.MarketName)
+                                    .SpriteCssClasses("Market")
+                                    .HtmlAttributes(new
+                                    {
+                                        nodeType = mainMarket.MarketType,
+                                        nodeId = mainMarket.MarketId,
+                                        nodeCode = mainMarket.MarketCode,
+                                        nodeText = mainMarket.MarketName,
+
+                                        style = "font-family:Vazir,Tahoma;font-size:12px;"
+                                    }).Items(items =>
+                                    {
+                                        foreach (var market in mainMarket.MarketModels)
+                                        {
+                                            items.Add()
+                                            .Text("بازار : " + market.MarketName)
+                                            .SpriteCssClasses("Market")
+                                            .HtmlAttributes(new
+                                            {
+                                                nodeType = market.MarketType,
+                                                nodeId = market.MarketId,
+                                                nodeCode = market.MarketCode,
+                                                nodeText = market.MarketName,
+
+                                                style = "font-family:Vazir,Tahoma;font-size:12px;"
+                                            }).Items(items =>
+                                            {
+                                                foreach (var phase in market.MarketStructureModels)
+                                                {
+                                                    items.Add()
+                                                    .Text("فاز : " + phase.MarketStructureName)
+                                                    .SpriteCssClasses("Phase")
+                                                    .HtmlAttributes(new
+                                                    {
+                                                        nodeType = phase.MarketStructureTypeStrCode,
+                                                        nodeId = phase.MarketStructureId,
+                                                        nodeCode = phase.MarketStructureCode,
+                                                        nodeText = phase.MarketStructureName,
+                                                        title=phase.MarketStructureAddress,
+                                                        style = "font-family:Vazir,Tahoma;font-size:12px;"
+                                                    }).Items(items =>
+                                                    {
+                                                        foreach (var zone in phase.MarketStructureModels)
+                                                        {
+                                                            items.Add()
+                                                            .Text("زون : " + zone.MarketStructureName)
+                                                            .SpriteCssClasses("Zone")
+                                                            .HtmlAttributes(new
+                                                            {
+                                                                nodeType = zone.MarketStructureTypeStrCode,
+                                                                nodeId = zone.MarketStructureId,
+                                                                nodeCode = zone.MarketStructureCode,
+                                                                nodeText = zone.MarketStructureName,
+                                                                title = zone.MarketStructureAddress,
+                                                                style = "font-family:Vazir,Tahoma;font-size:12px;"
+                                                            }).Items(items =>
+                                                                {
+                                                                    foreach (var corridor in zone.MarketStructureModels)
+                                                                    {
+                                                                        items.Add()
+                                                                        .Text("تالار : " + corridor.MarketStructureName)
+                                                                        .SpriteCssClasses("Corridor")
+                                                                        .HtmlAttributes(new
+                                                                        {
+                                                                            nodeType = corridor.MarketStructureTypeStrCode,
+                                                                            nodeId = corridor.MarketStructureId,
+                                                                            nodeCode = corridor.MarketStructureCode,
+                                                                            nodeText = corridor.MarketStructureName,
+                                                                            title = corridor.MarketStructureAddress,
+                                                                            style = "font-family:Vazir,Tahoma;font-size:12px;"
+                                                                        }).Items(items =>
+                                                                            {
+                                                                                foreach (var shop in corridor.MarketStructureModels)
+                                                                                {
+                                                                                    items.Add()
+                                                                                    .Text("غرفه : " + shop.MarketStructureName)
+                                                                                    .SpriteCssClasses("Shop")
+                                                                                    .HtmlAttributes(new
+                                                                                    {
+                                                                                        nodeType = shop.MarketStructureTypeStrCode,
+                                                                                        nodeId = shop.MarketStructureId,
+                                                                                        nodeCode = shop.MarketStructureCode,
+                                                                                        nodeText = shop.MarketStructureName,
+                                                                                        title = shop.MarketStructureAddress,
+                                                                                        style = "font-family:Vazir,Tahoma;font-size:12px;"
+                                                                                    });
+
+                                                                                }
+                                                                            });
+
+                                                                    }
+                                                                });
+
+                                                        }
+                                                    });
+
+                                                }
+                                            });
+
+                                        }
+                                    });
+
+                                }
+                            })
+                    )
+                </div>
+            </div>
+                   
+                    }
+
+
+                
+
+            </div>
+
+
+            @section Scripts {
+
+
+
+                <script>
+        var ViewName = "MarketStructures";
+
+        $(document).ready(function (e) {
+
+
+            $("#Btn"+ViewName+"New").click(function (e) {
+                if ($("#TreeViewMarketStructures span.k-state-selected").length > 0) {
+                    var NodeId = 0;
+                    var ParentId = $("#TreeViewMarketStructures span.k-state-selected").parentsUntil("li.k-item").parent().attr("nodeId");
+                    var MarketId = 0;
+                    var NodeType = $("#TreeViewMarketStructures span.k-state-selected").parentsUntil("li.k-item").parent().attr("nodeType");
+
+                    if (NodeType == "Phase" || NodeType == "Zone" || NodeType == "Corridor") {
+
+                        showWindow("ویرایش ساختار", "Market/MarketStructureDefine", NodeId + "/" + ParentId+"/"+MarketId, true, "medium", refreshMarketStructures);
+                    }
+                    else if (NodeType == "Market")
+                    {
+                        MarketId = ParentId;
+                        ParentId = 0;
+                        showWindow("ویرایش ساختار", "Market/MarketStructureDefine", NodeId + "/" + ParentId + "/" + MarketId, true, "medium", refreshMarketStructures);
+                    }
+                    else {
+                        showNotification("هشدار", "امکان تعریف ساختار زیرمجموعه برای ساختار انتخاب شده وجود ندارد", "error");
+                    }
+                }
+                else {
+                    showNotification("هشدار", "لطفا ابتدا یک ساختار را جهت تعریف زیرمجموعه انتخاب نمایید", "error");
+                }
+
+            });
+
+            $("#Btn"+ViewName+"Edit").click(function (e) {
+
+                if ($("#TreeViewMarketStructures span.k-state-selected").length > 0) {
+                    var NodeId = $("#TreeViewMarketStructures span.k-state-selected").parentsUntil("li.k-item").parent().attr("nodeId");
+                    var ParentId = 0;
+                    var MarketId = 0;
+                    var NodeType = $("#TreeViewMarketStructures span.k-state-selected").parentsUntil("li.k-item").parent().attr("nodeType");
+
+                    if (NodeType == "Phase" || NodeType == "Zone" || NodeType == "Corridor" || NodeType == "Shop") {
+
+                        showWindow("ویرایش ساختار", "Market/MarketStructureDefine", NodeId+"/"+ParentId+"/"+MarketId, true, "medium", refreshMarketStructures);
+                    }
+                    else {
+                        showNotification("هشدار", "امکان ویرایش ساختار انتخاب شده وجود ندارد", "error");
+                    }
+                }
+                else {
+                    showNotification("هشدار", "لطفا ابتدا یک ساختار را انتخاب نمایید", "error");
+                }
+
+
+            });
+
+
+             $("#Btn"+ViewName+"Delete").click(function (e) {
+
+                 if ($("#TreeViewMarketStructures span.k-state-selected").length > 0) {
+                     var NodeId = $("#TreeViewMarketStructures span.k-state-selected").parentsUntil("li.k-item").parent().attr("nodeId");
+                     var ParentId = 0;
+                     var NodeType = $("#TreeViewMarketStructures span.k-state-selected").parentsUntil("li.k-item").parent().attr("nodeType");
+
+                     if (NodeType == "Phase" || NodeType == "Zone" || NodeType == "Corridor" || NodeType == "Shop") {
+
+                         showConfirm("حذف ساختار", "آیا جهت حذف ساختار انتخاب شده مطمئن هستید؟", deleteMarketStructure);
+                     }
+                     else {
+                         showNotification("هشدار", "امکان حذف ساختار انتخاب شده وجود ندارد", "error");
+                     }
+                 }
+                 else {
+                     showNotification("هشدار", "لطفا ابتدا یک ساختار را انتخاب نمایید", "error");
+                 }
+
+            });
+
+        });
+
+        function deleteMarketStructure() {
+            var NodeId = $("#TreeViewMarketStructures span.k-state-selected").parentsUntil("li.k-item").parent().attr("nodeId");
+
+           $.ajax({
+                type: "POST",
+                url: "@Url.Action("DeleteMarkrtStructure")",
+               data: { Id: NodeId},
+                dataType: "json",
+               success: function (data) {
+
+                   showNotification("حذف ساختار", data.ResultMessage, data.ResultType);
+                   if (data.ResultType == "success") {
+                       refreshMarketStructures();
+                   }
+                },
+               error: function (req, status, error) {
+                    showNotification("حذف ساختار", error, "error");
+
+                }
+            });
+        }
+
+
+
+
+        function refreshMarketStructures() {
+
+            $("span#MarketMarketStructures_BtnRefresh").click();
+            var tabStrip = $("#tabstrip").kendoTabStrip().data("kendoTabStrip");
+            tabStrip.reload("li[dialogName=MarketMarketStructures]");
+        }
+
+
+
+
+
+                </script>
+            }
+
+

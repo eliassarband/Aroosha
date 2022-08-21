@@ -1,0 +1,239 @@
+﻿@model Aroosha.Models.CreditDefineModel
+
+@{
+    Layout = "_ToolbarLayout";
+}
+
+@{
+    IEnumerable<BasicInformationForComboModel> PaymentTypeComboData = ViewData["PaymentTypeComboData"] as IEnumerable<BasicInformationForComboModel>;
+    IEnumerable<CustomerModel> CustomerComboData = ViewData["CustomerComboData"] as IEnumerable<CustomerModel>;
+}
+
+
+
+
+<div class="container" style="font-family:Vazir,Tahoma;font-size:12px">
+
+    @using (Html.BeginForm("CreditDefine", "Market", FormMethod.Post, new { id = "FormCreditDefine", @class = "form" }))
+    {
+    <div class="row">
+        <div class="col-6 col-justify-content-right">
+            <span data-role="floatinglabel" class="k-floating-label-container k-state-focused" style="width: 90%;">
+                <label class="k-label k-input-label" for="CreditDefineCustomerId">مشتری</label>
+                <span class="k-widget k-numerictextbox" style="width: 100%; font-family: Vazir, Tahoma; font-size: 12px;">
+                    <span class="k-numeric-wrap k-state-default">
+                        @(Html.Kendo().ComboBoxFor(model => model.CreditDefineCustomerId)
+                          .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+                          .Placeholder("مشتری")
+                          //.DataTextField("Name")
+                          //.DataValueField("Id")
+                          .Filter(FilterType.Contains)
+                          .AutoBind(true)
+                          .Items(items =>
+                          {
+                              foreach (var item in CustomerComboData)
+                              {
+
+                                  items.Add()
+                                  .Text(item.CustomerFullName)
+                                  .Value(item.CustomerId.ToString());
+
+                              }
+                          })
+                    )
+                    </span>
+                </span>
+            </span>
+        </div>
+        <div class="col-6 col-justify-content-right">
+            <span data-role="floatinglabel" class="k-floating-label-container k-state-focused" style="width: 90%;">
+                <label class="k-label k-input-label" for="CreditDefinePaymentTypeId">نوع پرداخت</label>
+                <span class="k-widget k-numerictextbox" style="width: 100%; font-family: Vazir, Tahoma; font-size: 12px;">
+                    <span class="k-numeric-wrap k-state-default">
+                        @(Html.Kendo().ComboBoxFor(model => model.CreditDefinePaymentTypeId)
+                          .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+                          .Placeholder("نوع پرداخت")
+                          //.DataTextField("Name")
+                          //.DataValueField("Id")
+                          .Filter(FilterType.Contains)
+                          .AutoBind(true)
+                          .Items(items =>
+                          {
+                              foreach (var item in PaymentTypeComboData)
+                              {
+
+                                  items.Add()
+                                  .Text(item.Name)
+                                  .Value(item.Id.ToString());
+
+                              }
+                          })
+                    )
+                    </span>
+                </span>
+            </span>
+        </div>
+        <div class="col-6 col-justify-content-right">
+            @(Html.Kendo().MaskedTextBoxFor(model => model.CreditDefineDate)
+                        .Label(label => label
+                            .Content("تاریخ")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+                        .Mask("####/##/##")
+                    )
+        </div>
+
+        <div class="col-6 col-justify-content-right">
+            @(Html.Kendo().IntegerTextBoxFor(model => model.CreditDefineAmount)
+                        .Placeholder("مبلغ شارژ")
+                        .Label(label => label
+                            .Content("مبلغ شارژ")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+                        .Min(0)
+                        .Format("n0")
+                    )
+        </div>
+        <div class="col-6 col-justify-content-right">
+            @(Html.Kendo().TextBoxFor(model => model.CreditDefineReceiptNumber)
+                        .Placeholder("شماره فیش پرداخت")
+                        .Label(label => label
+                            .Content("شماره فیش پرداخت")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+
+                    )
+        </div>
+        <div class="col-6 col-justify-content-right">
+            افزاینده / کاهنده
+            @(Html.Kendo().SwitchFor(model => model.CreditDefineType)
+                            .Name("CreditDefineType")
+                            .Messages(c => c.Checked("افزاینده").Unchecked("کاهنده"))
+                )
+        </div>
+        <div class="col-6 col-justify-content-right">
+            @(Html.Kendo().IntegerTextBoxFor(model => model.CreditDefineBalance)
+                        .Placeholder("مانده اعتبار")
+                        .Enable(false)
+                        .Label(label => label
+                            .Content("مانده اعتبار")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+
+                    )
+        </div>
+        <div class="col-12 col-justify-content-right">
+            @(Html.Kendo().TextBoxFor(model => model.CreditDefineDescription)
+                        .Placeholder("توضیحات")
+                        .Label(label => label
+                            .Content("توضیحات")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+
+                    )
+        </div>
+    </div>
+
+                
+                @Html.HiddenFor(model => model.CreditDefineId)
+
+                }
+
+            </div>
+
+            @section Scripts {
+
+
+
+                <script>
+        var ViewName = "CreditDefine";
+        $(document).ready(function (e) {
+
+            $("span.k-floating-label-container").css("width", "100%");
+
+            $("#Btn" + ViewName + "Save").click(function (e) {
+
+                Save("close");
+
+            });
+
+            $("#Btn" + ViewName + "SaveAndContinue").click(function (e) {
+
+                Save("continue");
+
+            });
+
+
+            $("#Btn" + ViewName + "SaveAndNew").click(function (e) {
+
+                Save("new");
+
+            });
+
+
+
+        });
+
+
+
+        function Save(action) {
+
+
+            var valdata = $("#FormCreditDefine").serialize();
+
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("SaveCredit")",
+                data: valdata,
+                dataType: "json",
+                success: function (data) {
+
+                    showNotification("ذخیره شارژ", data.ResultMessage, data.ResultType);
+                    Id = data.Id;
+                    if (data.ResultType == "success") {
+
+                        var CustomerId = 0;
+
+                        if (action == "new") {
+                            $("span#MarketCreditDefine_BtnClose").click();
+                            Id = 0;
+                            showWindow("تعریف شارژ جدید", "Market/CreditDefine", Id+"/"+CustomerId, true, "medium", refreshCreditDefine);
+                        }
+                        else if (action == "continue") {
+                            $("span#MarketShopDefine_BtnClose").click();
+
+                            showWindow("تعریف شارژ جدید", "Market/CreditDefine", Id+"/"+CustomerId, true, "medium", refreshCreditDefine);
+                        }
+                        else {
+                            $("span#MarketCreditDefine_BtnClose").click();
+                        }
+                    }
+                },
+                error: function (req, status, error) {
+                    showNotification("ذخیره شارژ", error, "error");
+
+                }
+            });
+
+        }
+
+
+        function refreshCreditDefine() {
+
+            $("span#MarketCreditDefine_BtnRefresh").click();
+            var tabStrip = $("#tabstrip").kendoTabStrip().data("kendoTabStrip");
+            tabStrip.reload("li[dialogName=MarketCreditDefine]");
+
+        }
+
+
+
+                </script>
+            }
+
+

@@ -1,0 +1,159 @@
+﻿@model IEnumerable<Aroosha.Models.RentModel>
+
+@{
+    Layout = "_ToolbarLayout";
+}
+
+
+<div id="container">
+
+
+    <div class="row">
+        <div class="col-12">
+            
+        </div>
+        <div class="col-12">
+            @(Html.Kendo().Grid(Model)
+                    .Name("GridRent")
+                    .Columns(columns =>
+                    {
+                        columns.Bound(p => p.RentCustomerName).Title("مشتری").Width(150).HeaderHtmlAttributes(new { style = "text-align:center" }).HtmlAttributes(new { style = "text-align:center" });
+                        columns.Bound(p => p.RentDate).Title("تاریخ اجاره").Width(80).HeaderHtmlAttributes(new { style = "text-align:center" }).HtmlAttributes(new { style = "text-align:center" });
+                        columns.Bound(p => p.RentMarketScheduleDescription).Title("نام تقویم").Width(150).HeaderHtmlAttributes(new { style = "text-align:center" }).HtmlAttributes(new { style = "text-align:center" });
+                        columns.Bound(p => p.RentShopAddress).Title("غرفه").Width(250).HeaderHtmlAttributes(new { style = "text-align:center" }).HtmlAttributes(new { style = "text-align:right" });
+                        columns.Bound(p => p.RentAmount).Title("مبلغ").Width(120).HeaderHtmlAttributes(new { style = "text-align:center" }).HtmlAttributes(new { style = "text-align:right" });
+                        columns.Bound(p => p.RentPaid).Title("وضعیت پرداخت").Width(80).HeaderHtmlAttributes(new { style = "text-align:center" }).HtmlAttributes(new { style = "text-align:center" }).ClientTemplate("<span id='badge_#=RentId#' class='badgeActiveStatus_#=RentPaid#'></span>");
+                        columns.Bound(p => p.RentId).Title("Id").Width(1).HeaderHtmlAttributes(new { style = "display:none" }).HtmlAttributes(new { style = "display:none", type = "RentId" });
+                        columns.Bound(p => p.RentMarketScheduleDetailId).Title("MarketScheduleDetailId").Width(1).HeaderHtmlAttributes(new { style = "display:none" }).HtmlAttributes(new { style = "display:none", type = "RentMarketScheduleDetailId" });
+                        columns.Bound(p => p.RentCustomerId).Title("CustomerId").Width(1).HeaderHtmlAttributes(new { style = "display:none" }).HtmlAttributes(new { style = "display:none", type = "RentCustomerId" });
+                        columns.Bound(p => p.RentShopId).Title("ShopId").Width(1).HeaderHtmlAttributes(new { style = "display:none" }).HtmlAttributes(new { style = "display:none", type = "RentShopId" });
+                        columns.Bound(p => p.RentShopIdentifier).Title("ShopIdentifier").Width(1).HeaderHtmlAttributes(new { style = "display:none" }).HtmlAttributes(new { style = "display:none", type = "RentShopIdentifier" });
+                        columns.Bound(p => p.RentDescription).Title("Description").Width(1).HeaderHtmlAttributes(new { style = "display:none" }).HtmlAttributes(new { style = "display:none", type = "RentDescription" });
+                    })
+                    .Pageable(pageable => pageable
+                                      .Refresh(true)
+                                      .PageSizes(true)
+                                      .ButtonCount(5))
+                    .Sortable()
+                    .Selectable(selectable => selectable.Mode(GridSelectionMode.Single))
+                    .PersistSelection(true)
+                    .Filterable(ftb => ftb.Mode(GridFilterMode.Menu))
+                    //.Events(events => events.DataBound("onDataBound"))
+                    .DataSource(dataSource => dataSource
+                        .Ajax()
+                        .PageSize(10)
+                        .ServerOperation(false)
+                        ).HtmlAttributes(new { style = "font-family:Vazir,Tahoma;font-size:12px" })
+                )
+        </div>
+
+    </div>
+
+
+</div>
+
+@section Scripts {
+
+
+
+    <script>
+        var ViewName = "Rents";
+        $(document).ready(function (e) {
+
+
+
+            $(".badgeActiveStatus_true").kendoBadge({
+                themeColor: 'success',
+                text: 'پرداخت شده',
+            });
+
+            $(".badgeActiveStatus_false").kendoBadge({
+                themeColor: 'error',
+                text: 'پرداخت نشده',
+            });
+
+            $("#Btn"+ViewName+"New").click(function (e) {
+                showWindow("ثبت اجاره جدید", "Market/RentDefine", "0", true, "large", refreshRents);
+
+            });
+
+            $("#Btn"+ViewName+"Edit").click(function (e) {
+
+                var selectedItem = $("#GridRent tr.k-state-selected")
+                var Id = 0;
+                if ($(selectedItem).length == 0) {
+
+                    showNotification("هشدار", "لطفا ابتدا یک اجاره را انتخاب نمایید", "error");
+
+                }
+                else {
+                    Id = $(selectedItem).find("td[type=RentId]").html();
+                    showWindow("ویرایش اجاره", "Market/RentDefine", Id, true, "large", refreshRents);
+                }
+
+
+
+            });
+
+
+             $("#Btn"+ViewName+"Delete").click(function (e) {
+
+                var selectedItem = $("#GridRent tr.k-state-selected")
+                if ($(selectedItem).length == 0) {
+
+                    showNotification("هشدار", "لطفا ابتدا یک اجاره را انتخاب نمایید", "error");
+
+                }
+                else {
+
+                    showConfirm("حذف اجاره", "آیا جهت حذف اجاره انتخاب شده مطمئن هستید؟", deleteReserve);
+
+                }
+
+
+
+             });
+
+            $("#Btn" + ViewName + "NewRents").click(function (e) {
+                showWindow("ثبت اجاره دسته ای", "Market/RentsDefine", "0", true, "large", refreshRents);
+
+            });
+
+        });
+
+        function deleteReserve() {
+            var selectedItem = $("#GridRent tr.k-state-selected");
+            var Id = $(selectedItem).find("td[type=RentId]").html();
+
+           $.ajax({
+                type: "POST",
+                url: "@Url.Action("DeleteRent")",
+                data: {Id: Id},
+                dataType: "json",
+               success: function (data) {
+
+                   showNotification("حذف اجاره", data.ResultMessage, data.ResultType);
+                   if (data.ResultType == "success") {
+                       refreshRents();
+                   }
+                },
+               error: function (req, status, error) {
+                    showNotification("حذف اجاره", error, "error");
+
+                }
+            });
+        }
+
+
+        function refreshRents() {
+
+            $("span#MarketRents_BtnRefresh").click();
+            var tabStrip = $("#tabstrip").kendoTabStrip().data("kendoTabStrip");
+            tabStrip.reload("li[dialogName=MarketRents]");
+
+        }
+
+
+
+    </script>
+}

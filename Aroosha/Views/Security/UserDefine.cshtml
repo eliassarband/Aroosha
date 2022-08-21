@@ -1,0 +1,248 @@
+﻿@model Aroosha.Models.UserDefineModel
+
+@{
+    Layout = "_ToolbarLayout";
+}
+
+@{
+    IEnumerable<TenantModel> TenantComboData = ViewData["TenantComboData"] as IEnumerable<TenantModel>;
+}
+
+<div class="container" style="font-family:Vazir,Tahoma;font-size:12px">
+
+
+    @using (Html.BeginForm("UserDefine", "Security", FormMethod.Post, new { id = "FormUserDefine", @class = "form" }))
+    {
+        <div class="row">
+            <div class="col-6 col-justify-content-right">
+                @(Html.Kendo().NumericTextBoxFor(model => model.UserDefineCode)
+                        .Placeholder("کد کاربر")
+                        .Label(label => label
+                            .Content("کد کاربر")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+                        .Min(0)
+                        .Format("n0")
+                    )
+            </div>
+            <div class="col-6 col-justify-content-right">
+                @(Html.Kendo().TextBoxFor(model => model.UserDefineStrCode)
+                        .Placeholder("کد کاراکتری کاربر")
+                        .Label(label => label
+                            .Content("کد کاراکتری کاربر")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+
+                    )
+            </div>
+            <div class="col-6 col-justify-content-right">
+                @(Html.Kendo().TextBoxFor(model => model.UserDefineFirstName)
+                        .Placeholder("نام کاربر")
+                        .Label(label => label
+                            .Content("نام کاربر")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+
+                    )
+            </div>
+            <div class="col-6 col-justify-content-right">
+                @(Html.Kendo().TextBoxFor(model => model.UserDefineLastName)
+                        .Placeholder("نام خانوادگی کاربر")
+                        .Label(label => label
+                            .Content("نام خانوادگی کاربر")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+
+                    )
+            </div>
+            <div class="col-6 col-justify-content-right">
+                @(Html.Kendo().TextBoxFor(model => model.UserDefineUsername)
+                        .Placeholder("نام کاربری")
+                        .Label(label => label
+                            .Content("نام کاربری")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+
+                    )
+            </div>
+            <div class="col-6 col-justify-content-right">
+                @(Html.Kendo().TextBoxFor(model => model.UserDefinePassword)
+                        .Placeholder("کلمه عبور")
+                        .Label(label => label
+                            .Content("کلمه عبور")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { type = "password", autocomplete = "new-password", style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+
+                    )
+            </div>
+            <div class="col-6 col-justify-content-right">
+                @(Html.Kendo().TextBoxFor(model => model.UserDefinePasswordHint)
+                        .Placeholder("راهنمای کلمه عبور")
+                        .Label(label => label
+                            .Content("راهنمای کلمه عبور")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+
+                    )
+            </div>
+            <div class="col-6 col-justify-content-right">
+                <span data-role="floatinglabel" class="k-floating-label-container k-state-focused" style="width: 90%;">
+                    <label class="k-label k-input-label" for="UserDefineTenantId">بازار</label>
+                    <span class="k-widget k-numerictextbox" style="width: 100%; font-family: Vazir, Tahoma; font-size: 12px;">
+                        <span class="k-numeric-wrap k-state-default">
+                            @(Html.Kendo().ComboBoxFor(model => model.UserDefineTenantId)
+                          .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+                          .Placeholder("بازار")
+                          //.DataTextField("Name")
+                          //.DataValueField("Id")
+                          .Filter(FilterType.Contains)
+                          .AutoBind(true)
+                          .Items(items =>
+                          {
+                              foreach (var item in TenantComboData)
+                              {
+
+                                  items.Add()
+                                  .Text(item.Name)
+                                  .Value(item.Id.ToString());
+
+                              }
+                          })
+                    )
+                        </span>
+                    </span>
+                </span>
+            </div>
+            <div class="col-6 col-justify-content-right">
+                <label class="k-label k-checkbox-label" for="UserDefineActive">وضعیت کاربر</label>
+                @(Html.Kendo().SwitchFor(model => model.UserDefineActive)
+                            .Name("UserDefineActive")
+                            .Messages(c => c.Checked("فعال").Unchecked("غیرفعال"))
+                )
+            </div>
+            <div class="col-6 col-justify-content-right">
+                <label class="k-label k-checkbox-label" for="UserDefineForceFirstLoginChange">تغییر کلمه عبور در اولین ورود</label>
+                @(Html.Kendo().SwitchFor(model => model.UserDefineForceFirstLoginChange)
+                            .Name("UserDefineForceFirstLoginChange")
+                            .Messages(c => c.Checked("فعال").Unchecked("غیرفعال"))
+                )
+            </div>
+
+            </div>
+            @Html.HiddenFor(model => model.UserDefineId)
+            @Html.HiddenFor(model => model.PersonId)
+
+
+            }
+
+        
+
+
+    </div>
+
+
+@section Scripts {
+
+    <script>
+        var Id = 0;
+        var ViewName = "UserDefine";
+        $(document).ready(function (e) {
+
+            $("span.k-floating-label-container").css("width", "100%");
+
+            $("#UserDefinePassword").val("");
+
+            $("#Btn"+ViewName+"Save").click(function (e) {
+
+                Save("close");
+
+            });
+
+            $("#Btn"+ViewName+"SaveAndContinue").click(function (e) {
+
+                Save("continue");
+
+            });
+
+
+            $("#Btn"+ViewName+"SaveAndNew").click(function (e) {
+
+                Save("new");
+
+            });
+
+        });
+
+        $("#Btn" + ViewName + "UserAccess").click(function (e) {
+
+            var Id = $("#UserDefineId").val();
+
+            if (Id == 0) {
+
+                showNotification("هشدار", "لطفا ابتدا کاربر را ذخیره نمایید", "error");
+
+            }
+            else {
+
+                showWindow("مدیریت دسترسی کاربران", "Security/UserAccess", Id, true, "medium", refreshUserDefine);
+            }
+
+
+        });
+
+        function Save(action) {
+
+
+            var valdata = $("#FormUserDefine").serialize();
+
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("SaveUser")",
+                data: valdata,
+                dataType: "json",
+                success: function (data) {
+
+                    showNotification("ذخیره کاربر", data.ResultMessage, data.ResultType);
+                    Id = data.Id;
+                    if (data.ResultType == "success") {
+                        if (action == "new") {
+                            $("span#SecurityUserDefine_BtnClose").click();
+                            Id = 0;
+                            showWindow("تعریف کاربر جدید", "Security/UserDefine", Id, true, "medium", refreshUserDefine);
+                        }
+                        else if (action == "continue") {
+                            $("span#SecurityUserDefine_BtnClose").click();
+
+                            showWindow("تعریف کاربر جدید", "Security/UserDefine", Id, true, "medium", refreshUserDefine);
+                        }
+                        else {
+                            $("span#SecurityUserDefine_BtnClose").click();
+                        }
+                    }
+                },
+                error: function (req, status, error) {
+                    showNotification("ذخیره کاربر", error, "error");
+
+                }
+            });
+
+        }
+
+        function refreshUserDefine() {
+
+            $("span#SecurityUserDefine_BtnRefresh").click();
+            var tabStrip = $("#tabstrip").kendoTabStrip().data("kendoTabStrip");
+            tabStrip.reload("li[dialogName=SecurityUserDefine]");
+
+        }
+
+
+    </script>
+}

@@ -1,0 +1,664 @@
+﻿@model Aroosha.Models.RentDefineModel
+
+@{
+    Layout = "_ToolbarLayout";
+}
+
+@{
+    IEnumerable<CustomerModel> CustomerComboData = ViewData["CustomerComboData"] as IEnumerable<CustomerModel>;
+    IEnumerable<ShopForComboModel> ShopComboData = ViewData["ShopComboData"] as IEnumerable<ShopForComboModel>;
+    IEnumerable<DiscountForComboModel> DiscountTypeComboData = ViewData["DiscountTypeComboData"] as IEnumerable<DiscountForComboModel>;
+    IEnumerable<MarketScheduleModel> MarketScheduleComboData = ViewData["MarketScheduleComboData"] as IEnumerable<MarketScheduleModel>;
+}
+
+
+<div class="container">
+
+    @using (Html.BeginForm("RentDefine", "Market", FormMethod.Post, new { id = "FormRentDefine", @class = "form" }))
+    {
+
+    <div class="row">
+        <div class="col-6 col-justify-content-right">
+            <span data-role="floatinglabel" class="k-floating-label-container k-state-focused" style="width: 90%;">
+                <label class="k-label k-input-label" for="RentDefineCustomerId">مشتری</label>
+                <span class="k-widget k-numerictextbox" style="width: 100%; font-family: Vazir, Tahoma; font-size: 12px;">
+                    <span class="k-numeric-wrap k-state-default">
+                        @(Html.Kendo().ComboBoxFor(model => model.RentDefineCustomerId)
+                          .HtmlAttributes(new { style = "width: 100%;font-family:Vazir,Tahoma;font-size:12px" })
+                          .Placeholder("مشتری")
+                          //.DataTextField("Name")
+                          //.DataValueField("Id")
+                          .Filter(FilterType.Contains)
+                          .AutoBind(true)
+                          .Items(items =>
+                          {
+                              foreach (var item in CustomerComboData)
+                              {
+
+                                  items.Add()
+                                  .Text(item.CustomerFullName)
+                                  .Value(item.CustomerId.ToString());
+
+                              }
+                          })
+                    )
+                    </span>
+                </span>
+            </span>
+        </div>
+        <div class="col-6 col-justify-content-right">
+            @(Html.Kendo().IntegerTextBoxFor(model => model.RentDefineCustomerBalance)
+                        .Placeholder("مانده اعتبار مشتری")
+                        .Enable(false)
+                        .Label(label => label
+                            .Content("مانده اعتبار مشتری")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+
+                    )
+        </div>
+        <div class="col-12 col-justify-content-right">
+            <span data-role="floatinglabel" class="k-floating-label-container k-state-focused" style="width: 90%;">
+                <label class="k-label k-input-label" for="RentDefineMarketScheduleDetailId">تاریخ اجاره</label>
+                <span class="k-widget k-numerictextbox" style="width: 100%; font-family: Vazir, Tahoma; font-size: 12px;">
+                    <span class="k-numeric-wrap k-state-default">
+                        @(Html.Kendo().ComboBoxFor(model => model.RentDefineMarketScheduleDetailId)
+                          .HtmlAttributes(new { style = "width: 100%;font-family:Vazir,Tahoma;font-size:12px" })
+                          .Placeholder("تاریخ اجاره")
+                          //.DataTextField("Name")
+                          //.DataValueField("Id")
+                          .Filter(FilterType.Contains)
+                          .AutoBind(true)
+                          .Items(items =>
+                          {
+                              foreach (var item in MarketScheduleComboData)
+                              {
+
+                                  items.Add()
+                                  .Text(item.ComboDescription)
+                                  .Value(item.MarketScheduleDetailId.ToString());
+
+                              }
+                          })
+                    )
+                    </span>
+                </span>
+            </span>
+        </div>
+        <div class="col-8 col-justify-content-right">
+            <span data-role="floatinglabel" class="k-floating-label-container k-state-focused" style="width: 90%;">
+                <label class="k-label k-input-label" for="RentDefineShopId">غرفه</label>
+                <span class="k-widget k-numerictextbox" style="width: 100%; font-family: Vazir, Tahoma; font-size: 12px;">
+                    <span class="k-numeric-wrap k-state-default">
+                        @(Html.Kendo().ComboBoxFor(model => model.RentDefineShopId)
+                          .HtmlAttributes(new { style = "width: 100%;font-family:Vazir,Tahoma;font-size:12px" })
+                          .Placeholder("غرفه")
+                          //.DataTextField("Name")
+                          //.DataValueField("Id")
+                          .Filter(FilterType.Contains)
+                          .AutoBind(true)
+                          .Items(items =>
+                          {
+                              foreach (var item in ShopComboData)
+                              {
+
+                                  items.Add()
+                                  .Text(item.StructureAddress)
+                                  .Value(item.Id.ToString());
+
+                              }
+                          })
+                    )
+                    </span>
+                </span>
+            </span>
+        </div>
+        <div class="col-4 col-justify-content-right">
+            @(Html.Kendo().TextBoxFor(model => model.RentDefineShopIdentifier)
+                        .Placeholder("شناسه غرفه")
+                        .Readonly(true)
+                        .Label(label => label
+                            .Content("شناسه غرفه")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+
+                    )
+        </div>
+        <div class="col-6 col-justify-content-right">
+            @(Html.Kendo().TextBoxFor(model => model.RentDefineTariffName)
+                        .Placeholder("تعرفه غرفات")
+                        .Readonly(true)
+                        .Label(label => label
+                            .Content("تعرفه غرفات")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+
+                    )
+        </div>
+        <div class="col-6 col-justify-content-right">
+            @(Html.Kendo().IntegerTextBoxFor(model => model.RentDefineTariffAmount)
+                        .Placeholder("مبلغ تعرفه")
+                        .Enable(false)
+                        .Label(label => label
+                            .Content("مبلغ تعرفه")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+
+                    )
+        </div>
+        <div class="col-4 col-justify-content-right">
+            <span data-role="floatinglabel" class="k-floating-label-container k-state-focused" style="width: 90%;">
+                <label class="k-label k-input-label" for="RentDefineDiscountId">منبع تخفیف</label>
+                <span class="k-widget k-numerictextbox" style="width: 100%; font-family: Vazir, Tahoma; font-size: 12px;">
+                    <span class="k-numeric-wrap k-state-default">
+                        @(Html.Kendo().ComboBoxFor(model => model.RentDefineDiscountId)
+                          .HtmlAttributes(new { style = "width: 100%;font-family:Vazir,Tahoma;font-size:12px" })
+                          .Placeholder("منبع تخفیف")
+                          //.DataTextField("Name")
+                          //.DataValueField("Id")
+                          .Filter(FilterType.Contains)
+                          .AutoBind(true)
+                          .Items(items =>
+                          {
+                              foreach (var item in DiscountTypeComboData)
+                              {
+
+                                  items.Add()
+                                  .Text(item.DiscountName)
+                                  .Value(item.DiscountId.ToString());
+
+                              }
+                          })
+                    )
+                    </span>
+                </span>
+            </span>
+        </div>
+        <div class="col-4 col-justify-content-right">
+            @(Html.Kendo().IntegerTextBoxFor(model => model.RentDefineDiscounPercent)
+                        .Placeholder("درصد تخفیف")
+                        .Enable(true)
+                        .Label(label => label
+                            .Content("درصد تخفیف")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+
+                    )
+        </div>
+        <div class="col-4 col-justify-content-right">
+            @(Html.Kendo().IntegerTextBoxFor(model => model.RentDefineDiscountAmount)
+                        .Placeholder("مبلغ تخفیف")
+                        .Enable(true)
+                        .Label(label => label
+                            .Content("مبلغ تخفیف")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+
+                    )
+        </div>
+        <div class="col-6 col-justify-content-right">
+            @(Html.Kendo().IntegerTextBoxFor(model => model.RentDefineAmount)
+                        .Placeholder("مبلغ قابل پرداخت")
+                        .Enable(false)
+                        .Label(label => label
+                            .Content("مبلغ قابل پرداخت")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+
+                    )
+        </div>
+        
+        <div class="col-12 col-justify-content-right">
+            @(Html.Kendo().TextBoxFor(model => model.RentDefineDescription)
+                        .Placeholder("توضیحات")
+                        .Label(label => label
+                            .Content("توضیحات")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+
+                    )
+        </div>
+
+
+        @Html.HiddenFor(model => model.RentDefineId)
+        @Html.HiddenFor(model => model.RentDefineDate)
+        @Html.HiddenFor(model => model.RentDefineTariffId)
+
+    </div>
+
+    }
+
+
+</div>
+
+
+@section Scripts {
+
+
+
+    <script>
+        var ViewName = "RentDefine";
+        $(document).ready(function (e) {
+
+            $("span.k-floating-label-container").css("width", "100%");
+
+            $("#Btn" + ViewName + "Save").click(function (e) {
+
+               Save("close");
+            });
+
+            $("#Btn" + ViewName + "SaveAndContinue").click(function (e) {
+
+                Save("continue");
+
+            });
+
+
+            $("#Btn" + ViewName + "SaveAndNew").click(function (e) {
+
+                Save("new");
+
+            });
+
+            var CustomerComboBox = $("#RentDefineCustomerId").data("kendoComboBox");
+            CustomerComboBox.bind("select", Customer_OnSelect);
+
+            var DiscountComboBox = $("#RentDefineDiscountId").data("kendoComboBox");
+            DiscountComboBox.bind("select", Discount_OnSelect);
+
+            var DiscountPercentTextBox = $("#RentDefineDiscounPercent").data("kendoNumericTextBox");
+            DiscountPercentTextBox.bind("change", DiscountPercent_OnChange);
+
+            var DiscountAmountTextBox = $("#RentDefineDiscountAmount").data("kendoNumericTextBox");
+            DiscountAmountTextBox.bind("change", DiscountAmount_OnChange);
+
+            var ShopComboBox = $("#RentDefineShopId").data("kendoComboBox");
+            ShopComboBox.bind("select", Shop_OnSelect);
+
+            var MarketScheduleDetailComboBox = $("#RentDefineMarketScheduleDetailId").data("kendoComboBox");
+            MarketScheduleDetailComboBox.bind("select", MarketScheduleDetail_OnSelect);
+
+        });
+
+        function Customer_OnSelect(e) {
+
+                if (e.item) {
+                    var dataItem = this.dataItem(e.item.index());
+                    var CustomerId = dataItem.Value;
+
+                    var url = "@Url.Action("GetCustomerDetail")";
+
+                    url += "/" + CustomerId;
+
+                    $.ajax({
+                        type: "GET",
+                        url: url,
+                        success: function (data) {
+
+                            var json = JSON.parse(data);
+
+                            var Balance = json.CustomerDefineBalance;
+
+                            var BalanceTextBox = $("#RentDefineCustomerBalance").data("kendoNumericTextBox");
+                            BalanceTextBox.value(Balance);
+                        },
+                        error: function (req, status, error) {
+                           // alert("11"+error)
+                        }
+                    });
+                }
+
+        }
+
+        function Discount_OnSelect(e) {
+             if (e.item) {
+                   var dataItem = this.dataItem(e.item.index());
+                 var DiscountId = dataItem.Value;
+
+                 var MarketScheduleDetailComboBox = $("#RentDefineMarketScheduleDetailId").data("kendoComboBox");
+                 var MarketScheduleDetailId = MarketScheduleDetailComboBox.value();
+
+                var url = "@Url.Action("GetDiscountDetail")";
+
+                url += "/" + MarketScheduleDetailId+"/"+DiscountId;
+
+                $.ajax({
+                    type: "GET",
+                    url: url,
+                    success: function (data) {
+
+                        var json = JSON.parse(data);
+
+                        var DiscountPercent = json.DiscountDefineDefaultPercent;
+                        var DiscountAmount = json.DiscountDefineDefaultPrice;
+
+                        var DiscountPercentTextBox = $("#RentDefineDiscounPercent").data("kendoNumericTextBox");
+                        DiscountPercentTextBox.value(DiscountPercent);
+
+                        var DiscountAmountTextBox = $("#RentDefineDiscountAmount").data("kendoNumericTextBox");
+                        DiscountAmountTextBox.value(DiscountAmount);
+
+                        CalculateDiscount();
+                        CalculateAmount();
+                    },
+                    error: function (req, status, error) {
+                        //alert("11"+error)
+                    }
+                });
+            }
+        }
+
+        function MarketScheduleDetail_OnSelect(e) {
+            if (e.item) {
+                var dataItem = this.dataItem(e.item.index());
+                var MarketScheduleDetailId = dataItem.Value;
+
+                var ShopComboBox = $("#RentDefineShopId").data("kendoComboBox");
+                var ShopId = ShopComboBox.value();
+
+                var url = "@Url.Action("GetTariffDetail")";
+
+                url += "/" + MarketScheduleDetailId + "/" + ShopId;
+
+                $.ajax({
+                    type: "GET",
+                    url: url,
+                    success: function (data) {
+
+                        var json = JSON.parse(data);
+
+                        var TariffName = json.TariffDefineName;
+                        var TariffAmount = json.TariffDefineRentAmount;
+
+                        var TariffNameTextBox = $("#RentDefineTariffName").data("kendoTextBox");
+                        TariffNameTextBox.value(TariffName);
+
+                        var TariffAmountTextBox = $("#RentDefineTariffAmount").data("kendoNumericTextBox");
+                        TariffAmountTextBox.value(TariffAmount);
+
+                        $("#RentDefineTariffId").val(json.TariffDefineId);
+
+                        CalculateDiscount();
+                        CalculateAmount();
+                    },
+                    error: function (req, status, error) {
+                        //alert("11"+error)
+                    }
+                });
+            }
+        }
+
+        function Shop_OnSelect(e) {
+             if (e.item) {
+                   var dataItem = this.dataItem(e.item.index());
+                 var ShopId = dataItem.Value;
+
+                 var MarketScheduleDetailComboBox = $("#RentDefineMarketScheduleDetailId").data("kendoComboBox");
+                 var MarketScheduleDetailId = MarketScheduleDetailComboBox.value();
+
+                var url = "@Url.Action("GetTariffDetail")";
+
+                url += "/" + MarketScheduleDetailId+"/"+ShopId;
+
+                $.ajax({
+                    type: "GET",
+                    url: url,
+                    success: function (data) {
+
+                        var json = JSON.parse(data);
+
+                        var TariffName = json.TariffDefineName;
+                        var TariffAmount = json.TariffDefineRentAmount;
+
+                        var TariffNameTextBox = $("#RentDefineTariffName").data("kendoTextBox");
+                        TariffNameTextBox.value(TariffName);
+
+                        var TariffAmountTextBox = $("#RentDefineTariffAmount").data("kendoNumericTextBox");
+                        TariffAmountTextBox.value(TariffAmount);
+
+                        $("#RentDefineTariffId").val(json.TariffDefineId);
+
+                        CalculateDiscount();
+                        CalculateAmount();
+                    },
+                    error: function (req, status, error) {
+                        //alert("11"+error)
+                    }
+                });
+
+                 //////////////////////////////////////////
+
+                var url = "@Url.Action("GetShopDetail")";
+
+                url += "/"+ShopId;
+
+                $.ajax({
+                    type: "GET",
+                    url: url,
+                    success: function (data) {
+
+                        var json = JSON.parse(data);
+
+                        var ShopIdentifier = json.ShopDefineIdentifier;
+
+                        var RentDefineShopIdentifierTextBox = $("#RentDefineShopIdentifier").data("kendoTextBox");
+                        RentDefineShopIdentifierTextBox.value(ShopIdentifier);
+
+                        CalculateDiscount();
+                        CalculateAmount();
+                    },
+                    error: function (req, status, error) {
+                        //alert("11"+error)
+                    }
+                });
+            }
+        }
+
+        function DiscountPercent_OnChange(e) {
+            var DiscountPercentTextBox = $("#RentDefineDiscounPercent").data("kendoNumericTextBox");
+            //DiscountPercentTextBox.value(DiscountPercent);
+            var DiscountPercent = DiscountPercentTextBox.value();
+
+            var DiscountAmountTextBox = $("#RentDefineDiscountAmount").data("kendoNumericTextBox");
+            //DiscountAmountTextBox.value(DiscountAmount);
+            var DiscountAmount = DiscountAmountTextBox.value();
+
+            var TariffAmountTextBox = $("#RentDefineTariffAmount").data("kendoNumericTextBox");
+            //TariffAmountTextBox.value(TariffAmount);
+            var TariffAmount = TariffAmountTextBox.value();
+
+            if (TariffAmount > 0 && DiscountPercent > 0) {
+                DiscountAmount = parseInt(TariffAmount) * parseInt(DiscountPercent) / 100;
+            }
+            else if (TariffAmount > 0 && DiscountPercent <= 0) {
+                DiscountAmount = 0;
+            }
+
+            DiscountAmountTextBox.value(DiscountAmount);
+
+            CalculateAmount();
+        }
+
+        function DiscountAmount_OnChange(e) {
+            var DiscountPercentTextBox = $("#RentDefineDiscounPercent").data("kendoNumericTextBox");
+            //DiscountPercentTextBox.value(DiscountPercent);
+            var DiscountPercent = DiscountPercentTextBox.value();
+
+            var DiscountAmountTextBox = $("#RentDefineDiscountAmount").data("kendoNumericTextBox");
+            //DiscountAmountTextBox.value(DiscountAmount);
+            var DiscountAmount = DiscountAmountTextBox.value();
+
+            var TariffAmountTextBox = $("#RentDefineTariffAmount").data("kendoNumericTextBox");
+            //TariffAmountTextBox.value(TariffAmount);
+            var TariffAmount = TariffAmountTextBox.value();
+
+            if (TariffAmount > 0 && DiscountAmount> 0) {
+                DiscountPercent = parseInt(DiscountAmount) * 100 / parseInt(TariffAmount);
+            }
+            else if (TariffAmount > 0 && DiscountAmount <= 0) {
+                DiscountPercent = 0;
+            }
+
+            DiscountPercentTextBox.value(DiscountPercent);
+
+            CalculateAmount();
+        }
+
+        function CalculateDiscount() {
+
+            var DiscountPercentTextBox = $("#RentDefineDiscounPercent").data("kendoNumericTextBox");
+            //DiscountPercentTextBox.value(DiscountPercent);
+            var DiscountPercent = DiscountPercentTextBox.value();
+
+            var DiscountAmountTextBox = $("#RentDefineDiscountAmount").data("kendoNumericTextBox");
+            //DiscountAmountTextBox.value(DiscountAmount);
+            var DiscountAmount = DiscountAmountTextBox.value();
+
+            var TariffAmountTextBox = $("#RentDefineTariffAmount").data("kendoNumericTextBox");
+            //TariffAmountTextBox.value(TariffAmount);
+            var TariffAmount = TariffAmountTextBox.value();
+
+            if (TariffAmount > 0 && DiscountPercent > 0 && DiscountAmount <= 0) {
+                DiscountAmount = parseInt(TariffAmount) * parseInt(DiscountPercent) / 100;
+            }
+            else if (TariffAmount > 0 && DiscountAmount > 0) {
+                DiscountPercent = parseInt(DiscountAmount) * 100 / parseInt(TariffAmount);
+            }
+            else {
+                DiscountPercent = 0;
+                DiscountAmount = 0;
+            }
+
+            DiscountPercentTextBox.value(DiscountPercent);
+            DiscountAmountTextBox.value(DiscountAmount);
+
+            CalculateAmount();
+        }
+
+        function CalculateAmount() {
+            var DiscountPercentTextBox = $("#RentDefineDiscounPercent").data("kendoNumericTextBox");
+            //DiscountPercentTextBox.value(DiscountPercent);
+            var DiscountPercent = DiscountPercentTextBox.value();
+
+            var DiscountAmountTextBox = $("#RentDefineDiscountAmount").data("kendoNumericTextBox");
+            //DiscountAmountTextBox.value(DiscountAmount);
+            var DiscountAmount = DiscountAmountTextBox.value();
+
+            var TariffAmountTextBox = $("#RentDefineTariffAmount").data("kendoNumericTextBox");
+            //TariffAmountTextBox.value(TariffAmount);
+            var TariffAmount = TariffAmountTextBox.value();
+
+            var RentDefineAmountTextBox = $("#RentDefineAmount").data("kendoNumericTextBox");
+            //TariffAmountTextBox.value(TariffAmount);
+            var RentAmount = RentDefineAmountTextBox.value();
+
+            if (TariffAmount > 0 && DiscountAmount > 0) {
+                RentAmount = TariffAmount - DiscountAmount;
+            }
+            else if (TariffAmount > 0 && DiscountAmount <= 0) {
+                RentAmount = RentAmount;
+            }
+            else {
+                RentAmount = 0;
+            }
+
+            RentDefineAmountTextBox.value(RentAmount);
+
+
+        }
+
+
+        function Save(action) {
+
+
+            //var valdata = $("#FormRentDefine").serialize();
+            var jsonData = {};
+            jsonData["RentDefineId"] = parseInt($("#RentDefineId").val());
+            //jsonData["RentDefineDate"] = "";
+            
+
+            var MarketScheduleDetailComboBox = $("#RentDefineMarketScheduleDetailId").data("kendoComboBox");
+            jsonData["RentDefineMarketScheduleDetailId"] = MarketScheduleDetailComboBox.value();
+            //jsonData["RentDefineMarketScheduleDescription"] = "";
+
+            var CustomerComboBox = $("#RentDefineCustomerId").data("kendoComboBox");
+            jsonData["RentDefineCustomerId"] = CustomerComboBox.value();
+
+            var ShopComboBox = $("#RentDefineShopId").data("kendoComboBox");
+            jsonData["RentDefineShopId"] = ShopComboBox.value();
+
+            jsonData["RentDefineTariffId"] = $("#RentDefineTariffId").val();
+
+            var TariffAmountTextBox=$("#RentDefineTariffAmount").data("kendoNumericTextBox");
+            jsonData["RentDefineTariffAmount"] = TariffAmountTextBox.value();
+            
+            var DiscountComboBox = $("#RentDefineDiscountId").data("kendoComboBox");
+            jsonData["RentDefineDiscountId"] = DiscountComboBox.value();
+
+            var DiscountAmountTextBox = $("#RentDefineDiscountAmount").data("kendoNumericTextBox");
+            jsonData["RentDefineDiscountAmount"] = DiscountAmountTextBox.value();
+
+            var DiscountPercentTextBox = $("#RentDefineDiscounPercent").data("kendoNumericTextBox");
+            jsonData["RentDefineDiscounPercent"] = DiscountPercentTextBox.value();
+
+            var RentDefineAmountTextBox = $("#RentDefineAmount").data("kendoNumericTextBox");
+            jsonData["RentDefineAmount"] = RentDefineAmountTextBox.value();
+
+            var DescriptionTextBox = $("#RentDefineDescription").data("kendoTextBox");
+            jsonData["RentDefineDescription"] = DescriptionTextBox.value();
+
+            
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("SaveRent")",
+                data: jsonData,
+                dataType: "json",
+                success: function (data) {
+
+                    showNotification("ذخیره اجاره", data.ResultMessage, data.ResultType);
+                    Id = data.Id;
+                    if (data.ResultType == "success") {
+                        if (action == "new") {
+                            $("span#MarketRentDefine_BtnClose").click();
+                            Id = 0;
+                            showWindow("ثبت اجاره جدید", "Market/RentDefine", Id, true, "large", refreshRentDefine);
+                        }
+                        else if (action == "continue") {
+                            $("span#MarketRentDefine_BtnClose").click();
+
+                            showWindow("ثبت اجاره جدید", "Market/RentDefine", Id, true, "large", refreshRentDefine);
+                        }
+                        else {
+                            $("span#MarketRentDefine_BtnClose").click();
+                        }
+                    }
+                },
+                error: function (req, status, error) {
+                    showNotification("ذخیره اجاره", error, "error");
+
+                }
+            });
+
+        }
+
+
+        function refreshRentDefine() {
+
+            $("span#MarketRentDefine_BtnRefresh").click();
+            var tabStrip = $("#tabstrip").kendoTabStrip().data("kendoTabStrip");
+            tabStrip.reload("li[dialogName=MarketRentDefine]");
+
+        }
+
+
+
+    </script>
+}

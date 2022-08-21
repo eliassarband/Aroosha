@@ -1,0 +1,84 @@
+﻿
+@model Aroosha.Models.LoginInformation
+
+
+@{
+    ViewBag.PageTitle = "ورود به سامانه";
+    Layout = "_AccountLayout";
+}
+
+@section HeadContent
+{
+
+}
+
+<div class="container LoginBox">
+    @using (Html.BeginForm("Login", "Account", FormMethod.Post))
+    {
+        <div class="row">
+
+            <div class="col-12 col-justify-content-center LoginHeader">
+                ورود به سامانه روز بازارها
+            </div>
+            <div class="col-12 col-justify-content-center">
+                <img src="~/images/Logo200B.png" style="height:100px;width:100px" />
+            </div>
+            <div class="col-12 col-justify-content-center">
+
+                @(Html.Kendo().TextBoxFor(model => model.Username)
+                            .Placeholder("نام کاربری")
+                            .HtmlAttributes(new { style = "width:100%;font-size:12px;font-family:Vazir,Tahoma;" })
+                            .Label(label => label
+                                .Content("نام کاربری")
+                                .Floating(true)
+                            )
+                            )
+
+            </div>
+            <div class="col-12 col-justify-content-center">
+
+                @(Html.Kendo().TextBoxFor(model => model.Password)
+                        .Placeholder("کلمه عبور...")
+                        .Label(label => label
+                            .Content("کلمه عبور")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { type = "password", style = "width:100%;font-size:12px;font-family:Vazir,Tahoma;" })
+                        )
+
+            </div>
+
+            <div class="col-12 col-justify-content-center text-danger">
+                @Html.ValidationMessageFor(model => model.Username, "")
+                @Html.ValidationMessageFor(model => model.Password, "")
+                @ViewData["ErrorMessage"]
+                @ViewData["Today"]
+            </div>
+            <div class="col-12 col-justify-content-center">
+                @(Html.Kendo().Button()
+                        .Name("BtnLogin")
+                        .HtmlAttributes(new { type = "submit", @class = "k-primary", style = "width: 90%;font-size:12px;font-family:Vazir,Tahoma" })
+                        .Content("ورود به سامانه"))
+            </div>
+            
+
+        </div>
+    }
+    </div>
+
+
+
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            //$("#Username").val("admin");
+            //$("#Password").val("Elias 8831");
+            $("#Username").focus();
+
+            
+            
+        });
+    </script>
+}
+

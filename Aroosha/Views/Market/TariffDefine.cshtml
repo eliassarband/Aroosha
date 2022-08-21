@@ -1,0 +1,204 @@
+﻿@model Aroosha.Models.TariffDefineModel
+
+@{
+    Layout = "_ToolbarLayout";
+}
+
+
+
+<div class="container" style="font-family:Vazir,Tahoma;font-size:12px">
+    
+        @using (Html.BeginForm("TariffDefine", "Market", FormMethod.Post, new { id = "FormTariffDefine", @class = "form" }))
+        {
+        <div class="row">
+            <div class="col-6 col-justify-content-right">
+                @(Html.Kendo().TextBoxFor(model => model.TariffDefineName)
+                        .Placeholder("نام تعرفه")
+                        .Label(label => label
+                            .Content("نام تعرفه")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+
+                    )
+            </div>
+            <div class="col-6 col-justify-content-right">
+                @(Html.Kendo().NumericTextBoxFor(model => model.TariffDefinePriority)
+                        .Placeholder("اولویت")
+                        .Label(label => label
+                            .Content("اولویت")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+                        .Min(0)
+                        .Format("n0")
+                    )
+            </div>
+            <div class="col-12 col-justify-content-right k-ltr">
+                @(Html.Kendo().TextBoxFor(model => model.TariffDefineFormula)
+                        .Placeholder("فرمول تعرفه")
+                        .Label(label => label
+                            .Content("فرمول تعرفه")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px;dir:ltr" })
+
+                    )
+            </div>
+            <div class="col-6 col-justify-content-right">
+                @(Html.Kendo().MaskedTextBoxFor(model => model.TariffDefineStartDate)
+                        .Label(label => label
+                            .Content("تاریخ شروع")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+                        .Mask("####/##/##")
+                    )
+            </div>
+            <div class="col-6 col-justify-content-right">
+                @(Html.Kendo().MaskedTextBoxFor(model => model.TariffDefineEndDate)
+                        .Label(label => label
+                            .Content("تاریخ پایان")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+                        .Mask("####/##/##")
+                    )
+            </div>
+            <div class="col-6 col-justify-content-right">
+                @(Html.Kendo().NumericTextBoxFor(model => model.TariffDefineRentAmount)
+                        .Placeholder("مبلغ اجاره")
+                        .Label(label => label
+                            .Content("مبلغ اجاره")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+                        .Min(0)
+                        .Format("n0")
+                    )
+            </div>
+            <div class="col-6 col-justify-content-right">
+                @(Html.Kendo().NumericTextBoxFor(model => model.TariffDefineReserveAmount)
+                        .Placeholder("مبلغ رزرو")
+                        .Label(label => label
+                            .Content("مبلغ رزرو")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+                        .Min(0)
+                        .Format("n0")
+                    )
+            </div>
+            <div class="col-12 col-justify-content-right">
+                @(Html.Kendo().TextBoxFor(model => model.TariffDefineDescription)
+                        .Placeholder("توضیحات")
+                        .Label(label => label
+                            .Content("توضیحات")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+
+                    )
+            </div>
+        </div>
+        @Html.HiddenFor(model => model.TariffDefineId)
+
+                    
+                    }
+
+
+                
+
+
+            </div>
+
+            @section Scripts {
+
+
+
+                <script>
+        var ViewName = "TariffDefine";
+        $(document).ready(function (e) {
+
+            $("span.k-floating-label-container").css("width", "100%");
+
+            $("#Btn" + ViewName + "Save").click(function (e) {
+
+                Save("close");
+
+            });
+
+            $("#Btn" + ViewName + "SaveAndContinue").click(function (e) {
+
+                Save("continue");
+
+            });
+
+
+            $("#Btn" + ViewName + "SaveAndNew").click(function (e) {
+
+                Save("new");
+
+            });
+
+
+
+
+        });
+
+
+
+        function Save(action) {
+
+
+            var valdata = $("#FormTariffDefine").serialize();
+
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("SaveTariff")",
+                data: valdata,
+                dataType: "json",
+                success: function (data) {
+
+                    showNotification("ذخیره تعرفه", data.ResultMessage, data.ResultType);
+                    Id = data.Id;
+                    if (data.ResultType == "success") {
+
+                        if (action == "new") {
+                            $("span#MarketTariffDefine_BtnClose").click();
+                            Id = 0;
+                            showWindow("تعریف تعرفه جدید", "Market/TariffDefine", Id, true, "medium", refreshTariffDefine);
+                        }
+                        else if (action == "continue") {
+                            $("span#MarketShopDefine_BtnClose").click();
+
+                            showWindow("تعریف تعرفه جدید", "Market/TariffDefine", Id, true, "medium", refreshTariffDefine);
+                        }
+                        else {
+                            $("span#MarketTariffDefine_BtnClose").click();
+                        }
+                    }
+                },
+                error: function (req, status, error) {
+                    showNotification("ذخیره تعرفه", error, "error");
+
+                }
+            });
+
+        }
+
+
+        function refreshTariffDefine() {
+
+            $("span#MarketTariffDefine_BtnRefresh").click();
+            var tabStrip = $("#tabstrip").kendoTabStrip().data("kendoTabStrip");
+            tabStrip.reload("li[dialogName=MarketTariffDefine]");
+
+        }
+
+
+
+                </script>
+            }
+
+

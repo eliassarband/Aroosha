@@ -1,0 +1,142 @@
+﻿@model IEnumerable<Aroosha.Models.JobModel>
+
+@{
+    Layout = "_ToolbarLayout";
+}
+
+<div id="container">
+
+
+    <div class="row">
+        <div class="col-12">
+            @(Html.Kendo().Grid(Model)
+                    .Name("GridJob")
+                    .Columns(columns =>
+                    {
+
+                        columns.Bound(p => p.JobCode).Title("کد  شغل").Width(80).HeaderHtmlAttributes(new { style = "text-align:center" }).HtmlAttributes(new { style = "text-align:center" });
+                        columns.Bound(p => p.JobName).Title("نام شغل").Width(200).HeaderHtmlAttributes(new { style = "text-align:center" }).HtmlAttributes(new { style = "text-align:center" });
+                        columns.Bound(p => p.JobGroupName).Title("نام گروه شغلی").Width(80).HeaderHtmlAttributes(new { style = "text-align:center" }).HtmlAttributes(new { style = "text-align:center" });
+                        columns.Bound(p => p.JobId).Title("Id").Width(1).HeaderHtmlAttributes(new { style = "display:none" }).HtmlAttributes(new { style = "display:none", type = "JobId" });
+                        columns.Bound(p => p.JobGroupId).Title("JobGroupId").Width(1).HeaderHtmlAttributes(new { style = "display:none" }).HtmlAttributes(new { style = "display:none", type = "JobGroupId" });
+                    })
+                    .Pageable(pageable => pageable
+                                      .Refresh(true)
+                                      .PageSizes(true)
+                                      .ButtonCount(5))
+                    .Sortable()
+                    .Selectable(selectable => selectable.Mode(GridSelectionMode.Single))
+                    .PersistSelection(true)
+                    .Filterable(ftb => ftb.Mode(GridFilterMode.Menu))
+                    //.Events(events => events.DataBound("onDataBound"))
+                    .DataSource(dataSource => dataSource
+                        .Ajax()
+                        .PageSize(10)
+                        .ServerOperation(false)
+                        ).HtmlAttributes(new { style = "font-family:Vazir,Tahoma;font-size:12px" })
+                )
+        </div>
+
+    </div>
+
+
+</div>
+
+@section Scripts {
+
+
+
+    <script>
+        var ViewName = "Jobs";
+        $(document).ready(function (e) {
+
+
+
+
+
+            $("#Btn" + ViewName + "New").click(function (e) {
+                
+                showWindow("تعریف شغل جدید", "General/JobDefine", "0/0", true, "medium", refreshJobs);
+
+            });
+
+            $("#Btn"+ViewName+"Edit").click(function (e) {
+                var JobGroupId = 0;
+                var Id = 0;
+
+                var selectedItem = $("#GridJob tr.k-state-selected")
+               
+                if ($(selectedItem).length == 0) {
+
+                    showNotification("هشدار", "لطفا ابتدا یک گروه شغلی را انتخاب نمایید", "error");
+
+                }
+                else {
+                    Id = $(selectedItem).find("td[type=JobId]").html();
+                    JobGroupId = $(selectedItem).find("td[type=JobGroupId]").html();
+
+                    showWindow("ویرایش  شغل", "General/JobDefine", Id + "/" + JobGroupId, true, "medium", refreshJobs);
+                }
+
+
+
+            });
+
+
+             $("#Btn"+ViewName+"Delete").click(function (e) {
+
+                 var selectedItem = $("#GridJob tr.k-state-selected")
+                if ($(selectedItem).length == 0) {
+
+                    showNotification("هشدار", "لطفا ابتدا یک شغل را انتخاب نمایید", "error");
+
+                }
+                else {
+
+                    showConfirm("حذف  شغل", "آیا جهت حذف شغل انتخاب شده مطمئن هستید؟", deleteJob);
+
+                }
+
+
+
+            });
+
+        });
+
+        function deleteJob() {
+            var selectedItem = $("#GridJob tr.k-state-selected");
+            var Id = $(selectedItem).find("td[type=JobId]").html();
+
+           $.ajax({
+                type: "POST",
+                url: "@Url.Action("DeleteJob")",
+                data: {Id: Id},
+                dataType: "json",
+               success: function (data) {
+
+                   showNotification("حذف شغل", data.ResultMessage, data.ResultType);
+                   if (data.ResultType == "success") {
+                       refreshJobs();
+                   }
+                },
+               error: function (req, status, error) {
+                    showNotification("حذف شغل", error, "error");
+
+                }
+            });
+        }
+
+        
+
+
+        function refreshJobs() {
+
+            $("span#GeneralJobs_BtnRefresh").click();
+            var tabStrip = $("#tabstrip").kendoTabStrip().data("kendoTabStrip");
+            tabStrip.reload("li[dialogName=GeneralJobs]");
+        }
+
+
+
+    </script>
+}

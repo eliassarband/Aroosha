@@ -1,0 +1,159 @@
+﻿@model IEnumerable<Aroosha.Models.ReserveModel>
+
+@{
+    Layout = "_ToolbarLayout";
+}
+
+
+<div id="container">
+
+
+    <div class="row">
+        <div class="col-12">
+            
+        </div>
+        <div class="col-12">
+            @(Html.Kendo().Grid(Model)
+                    .Name("GridReserve")
+                    .Columns(columns =>
+                    {
+                        columns.Bound(p => p.ReserveCustomerName).Title("مشتری").Width(150).HeaderHtmlAttributes(new { style = "text-align:center" }).HtmlAttributes(new { style = "text-align:center" });
+                        columns.Bound(p => p.ReserveDate).Title("تاریخ رزرو").Width(80).HeaderHtmlAttributes(new { style = "text-align:center" }).HtmlAttributes(new { style = "text-align:center" });
+                        columns.Bound(p => p.ReserveMarketScheduleDescription).Title("نام تقویم").Width(150).HeaderHtmlAttributes(new { style = "text-align:center" }).HtmlAttributes(new { style = "text-align:center" });
+                        columns.Bound(p => p.ReserveShopAddress).Title("غرفه").Width(250).HeaderHtmlAttributes(new { style = "text-align:center" }).HtmlAttributes(new { style = "text-align:right" });
+                        columns.Bound(p => p.ReserveAmount).Title("مبلغ").Width(120).HeaderHtmlAttributes(new { style = "text-align:center" }).HtmlAttributes(new { style = "text-align:right" });
+                        columns.Bound(p => p.ReservePaid).Title("وضعیت پرداخت").Width(80).HeaderHtmlAttributes(new { style = "text-align:center" }).HtmlAttributes(new { style = "text-align:center" }).ClientTemplate("<span id='badge_#=ReserveId#' class='badgeActiveStatus_#=ReservePaid#'></span>");
+                        columns.Bound(p => p.ReserveId).Title("Id").Width(1).HeaderHtmlAttributes(new { style = "display:none" }).HtmlAttributes(new { style = "display:none", type = "ReserveId" });
+                        columns.Bound(p => p.ReserveMarketScheduleDetailId).Title("MarketScheduleDetailId").Width(1).HeaderHtmlAttributes(new { style = "display:none" }).HtmlAttributes(new { style = "display:none", type = "ReserveMarketScheduleDetailId" });
+                        columns.Bound(p => p.ReserveCustomerId).Title("CustomerId").Width(1).HeaderHtmlAttributes(new { style = "display:none" }).HtmlAttributes(new { style = "display:none", type = "ReserveCustomerId" });
+                        columns.Bound(p => p.ReserveShopId).Title("ShopId").Width(1).HeaderHtmlAttributes(new { style = "display:none" }).HtmlAttributes(new { style = "display:none", type = "ReserveShopId" });
+                        columns.Bound(p => p.ReserveShopIdentifier).Title("ShopIdentifier").Width(1).HeaderHtmlAttributes(new { style = "display:none" }).HtmlAttributes(new { style = "display:none", type = "ReserveShopIdentifier" });
+                        columns.Bound(p => p.ReserveDescription).Title("Description").Width(1).HeaderHtmlAttributes(new { style = "display:none" }).HtmlAttributes(new { style = "display:none", type = "ReserveDescription" });
+                    })
+                    .Pageable(pageable => pageable
+                                      .Refresh(true)
+                                      .PageSizes(true)
+                                      .ButtonCount(5))
+                    .Sortable()
+                    .Selectable(selectable => selectable.Mode(GridSelectionMode.Single))
+                    .PersistSelection(true)
+                    .Filterable(ftb => ftb.Mode(GridFilterMode.Menu))
+                    //.Events(events => events.DataBound("onDataBound"))
+                    .DataSource(dataSource => dataSource
+                        .Ajax()
+                        .PageSize(10)
+                        .ServerOperation(false)
+                        ).HtmlAttributes(new { style = "font-family:Vazir,Tahoma;font-size:12px" })
+                )
+        </div>
+
+    </div>
+
+
+</div>
+
+@section Scripts {
+
+
+
+    <script>
+        var ViewName = "Reserves";
+        $(document).ready(function (e) {
+
+
+
+            $(".badgeActiveStatus_true").kendoBadge({
+                themeColor: 'success',
+                text: 'پرداخت شده',
+            });
+
+            $(".badgeActiveStatus_false").kendoBadge({
+                themeColor: 'error',
+                text: 'پرداخت نشده',
+            });
+
+            $("#Btn"+ViewName+"New").click(function (e) {
+                showWindow("ثبت رزرو جدید", "Market/ReserveDefine", "0", true, "large", refreshReserves);
+
+            });
+
+            $("#Btn"+ViewName+"Edit").click(function (e) {
+
+                var selectedItem = $("#GridReserve tr.k-state-selected")
+                var Id = 0;
+                if ($(selectedItem).length == 0) {
+
+                    showNotification("هشدار", "لطفا ابتدا یک رزرو را انتخاب نمایید", "error");
+
+                }
+                else {
+                    Id = $(selectedItem).find("td[type=ReserveId]").html();
+                    showWindow("ویرایش رزرو", "Market/ReserveDefine", Id, true, "large", refreshReserves);
+                }
+
+
+
+            });
+
+
+             $("#Btn"+ViewName+"Delete").click(function (e) {
+
+                var selectedItem = $("#GridReserve tr.k-state-selected")
+                if ($(selectedItem).length == 0) {
+
+                    showNotification("هشدار", "لطفا ابتدا یک رزرو را انتخاب نمایید", "error");
+
+                }
+                else {
+
+                    showConfirm("حذف رزرو", "آیا جهت حذف رزرو انتخاب شده مطمئن هستید؟", deleteReserve);
+
+                }
+
+
+
+             });
+
+            $("#Btn" + ViewName + "NewReserves").click(function (e) {
+                showWindow("ثبت رزرو دسته ای", "Market/ReservesDefine", "0", true, "large", refreshReserves);
+
+            });
+
+        });
+
+        function deleteReserve() {
+            var selectedItem = $("#GridReserve tr.k-state-selected");
+            var Id = $(selectedItem).find("td[type=ReserveId]").html();
+
+           $.ajax({
+                type: "POST",
+                url: "@Url.Action("DeleteReserve")",
+                data: {Id: Id},
+                dataType: "json",
+               success: function (data) {
+
+                   showNotification("حذف رزرو", data.ResultMessage, data.ResultType);
+                   if (data.ResultType == "success") {
+                       refreshReserves();
+                   }
+                },
+               error: function (req, status, error) {
+                    showNotification("حذف رزرو", error, "error");
+
+                }
+            });
+        }
+
+
+        function refreshReserves() {
+
+            $("span#MarketReserves_BtnRefresh").click();
+            var tabStrip = $("#tabstrip").kendoTabStrip().data("kendoTabStrip");
+            tabStrip.reload("li[dialogName=MarketReserves]");
+
+        }
+
+
+
+    </script>
+}

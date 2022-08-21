@@ -1,0 +1,66 @@
+﻿
+@{
+    Layout = null;
+}
+
+@section HeadContent
+{
+
+}
+
+@RenderSection("HeadContent", required: false)
+
+@{
+    IEnumerable<MenuActionModel> ToolbarData = ViewData["ToolbarData"] as IEnumerable<MenuActionModel>;
+    var ViewName = ViewContext.RouteData.Values["action"].ToString();
+    
+}
+
+@(Html.Kendo().ToolBar()
+.Name("Tollbar"+ViewName)
+.Items(items =>
+    {
+        foreach (var action in ToolbarData)
+        {
+            
+            items.Add()
+            .Type(CommandType.Button)
+            .Text(action.Title)
+            .Id("Btn" + ViewName + action.Name)
+            .HtmlAttributes(new
+            {
+                actionName = action.Name,
+                actionId = action.Id,
+                style = "font-family:Vazir,Tahoma;font-size:12px;marign-right:50px"
+            });
+            items.Add().Type(CommandType.Separator);
+        }
+    })
+)
+
+  <div class="container WindowBody">
+       @RenderBody()
+    </div>
+
+
+
+
+
+        @section Scripts {
+            <script>
+                $(document).ready(function () {
+
+
+
+
+                });
+
+
+            </script>
+        }
+
+        @RenderSection("scripts", required: false)
+
+
+
+

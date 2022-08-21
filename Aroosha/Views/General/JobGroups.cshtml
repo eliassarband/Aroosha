@@ -1,0 +1,155 @@
+﻿@model IEnumerable<Aroosha.Models.JobGroupModel>
+
+@{
+    Layout = "_ToolbarLayout";
+}
+
+<div id="container">
+
+
+    <div class="row">
+        <div class="col-12">
+            @(Html.Kendo().Grid(Model)
+                    .Name("GridJobGroup")
+                    .Columns(columns =>
+                    {
+
+                        columns.Bound(p => p.JobGroupCode).Title("کد گروه شغلی").Width(80).HeaderHtmlAttributes(new { style = "text-align:center" }).HtmlAttributes(new { style = "text-align:center" });
+                        columns.Bound(p => p.JobGroupName).Title("نام گروه شغلی").Width(200).HeaderHtmlAttributes(new { style = "text-align:center" }).HtmlAttributes(new { style = "text-align:center" });
+                        columns.Bound(p => p.JobGroupJobCount).Title("تعداد مشاغل").Width(80).HeaderHtmlAttributes(new { style = "text-align:center" }).HtmlAttributes(new { style = "text-align:center" });
+                        columns.Bound(p => p.JobGroupId).Title("Id").Width(1).HeaderHtmlAttributes(new { style = "display:none" }).HtmlAttributes(new { style = "display:none", type = "JobGroupId" });
+                    })
+                    .Pageable(pageable => pageable
+                                      .Refresh(true)
+                                      .PageSizes(true)
+                                      .ButtonCount(5))
+                    .Sortable()
+                    .Selectable(selectable => selectable.Mode(GridSelectionMode.Single))
+                    .PersistSelection(true)
+                    .Filterable(ftb => ftb.Mode(GridFilterMode.Menu))
+                    .DataSource(dataSource => dataSource
+                        .Ajax()
+                        .PageSize(10)
+                        .ServerOperation(false)
+                        ).HtmlAttributes(new { style = "font-family:Vazir,Tahoma;font-size:12px" })
+                )
+        </div>
+
+    </div>
+
+
+</div>
+
+@section Scripts {
+
+
+
+    <script>
+        var ViewName = "JobGroups";
+        $(document).ready(function (e) {
+
+
+
+          
+
+            $("#Btn"+ViewName+"New").click(function (e) {
+                showWindow("تعریف گروه شغل جدید", "General/JobGroupDefine", "0", true, "medium", refreshJobGroups);
+
+            });
+
+            $("#Btn"+ViewName+"Edit").click(function (e) {
+
+                var selectedItem = $("#GridJobGroup tr.k-state-selected")
+                var Id = 0;
+                if ($(selectedItem).length == 0) {
+
+                    showNotification("هشدار", "لطفا ابتدا یک گروه شغلی را انتخاب نمایید", "error");
+
+                }
+                else {
+                    Id = $(selectedItem).find("td[type=JobGroupId]").html();
+                    showWindow("ویرایش گروه شغلی", "General/JobGroupDefine", Id, true, "medium", refreshJobGroups);
+                }
+
+
+
+            });
+
+
+             $("#Btn"+ViewName+"Delete").click(function (e) {
+
+                 var selectedItem = $("#GridJobGroup tr.k-state-selected")
+                if ($(selectedItem).length == 0) {
+
+                    showNotification("هشدار", "لطفا ابتدا یک گروه شغلی را انتخاب نمایید", "error");
+
+                }
+                else {
+
+                    showConfirm("حذف گروه شغلی", "آیا جهت حذف گروه شغلی انتخاب شده مطمئن هستید؟", deleteJobGroup);
+
+                }
+
+
+
+            });
+
+        });
+
+        function deleteJobGroup() {
+            var selectedItem = $("#GridJobGroup tr.k-state-selected");
+            var Id = $(selectedItem).find("td[type=JobGroupId]").html();
+
+           $.ajax({
+                type: "POST",
+                url: "@Url.Action("DeleteJobGroup")",
+                data: {Id: Id},
+                dataType: "json",
+               success: function (data) {
+
+                   showNotification("حذف گروه شغلی", data.ResultMessage, data.ResultType);
+                   if (data.ResultType == "success") {
+                       refreshJobGroups();
+                   }
+                },
+               error: function (req, status, error) {
+                    showNotification("حذف گروه شغلی", error, "error");
+
+                }
+            });
+        }
+
+        $("#Btn" + ViewName + "Jobs").click(function (e) {
+
+            var selectedItem = $("#GridJobGroup tr.k-state-selected")
+            var Id = 0;
+            var JobGroupId = 0;
+            if ($(selectedItem).length == 0) {
+
+                JobGroupId = 0;
+
+            }
+            else {
+                JobGroupId = $(selectedItem).find("td[type=JobGroupId]").html();
+                
+               
+            }
+
+            showWindow("تعریف شغل", "General/Jobs", JobGroupId, true, "medium", refreshJobGroups);
+
+
+        });
+
+
+        function refreshJobGroups() {
+
+            $("span#GeneralJobGroups_BtnRefresh").click();
+            var tabStrip = $("#tabstrip").kendoTabStrip().data("kendoTabStrip");
+            tabStrip.reload("li[dialogName=GeneralJobGroups]");
+            
+        }
+
+
+
+    </script>
+}

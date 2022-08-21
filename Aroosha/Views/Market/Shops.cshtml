@@ -1,0 +1,144 @@
+﻿@model IEnumerable<Aroosha.Models.ShopModel>
+
+@{
+    Layout = "_ToolbarLayout";
+}
+
+<div id="container">
+
+
+    <div class="row">
+        <div class="col-12">
+            @(Html.Kendo().Grid(Model)
+                    .Name("GridShop")
+                    .Columns(columns =>
+                    {
+
+                        columns.Bound(p => p.ShopCode).Title("کد  غرفه").Width(80).HeaderHtmlAttributes(new { style = "text-align:center" }).HtmlAttributes(new { style = "text-align:center" });
+                        columns.Bound(p => p.ShopName).Title("نام غرفه").Width(100).HeaderHtmlAttributes(new { style = "text-align:center" }).HtmlAttributes(new { style = "text-align:center" });
+                        columns.Bound(p => p.ShopGroupName).Title(" گروه غرفات").Width(100).HeaderHtmlAttributes(new { style = "text-align:center" }).HtmlAttributes(new { style = "text-align:center" });
+                        columns.Bound(p => p.ShopTypeName).Title(" نوع غرفه").Width(80).HeaderHtmlAttributes(new { style = "text-align:center" }).HtmlAttributes(new { style = "text-align:center" });
+                        columns.Bound(p => p.TenantName).Title(" بازار").Width(100).HeaderHtmlAttributes(new { style = "text-align:center" }).HtmlAttributes(new { style = "text-align:center" });
+                        columns.Bound(p => p.ShopMarketStructureAddress).Title(" ساختار").Width(300).HeaderHtmlAttributes(new { style = "text-align:center" }).HtmlAttributes(new { style = "text-align:center" });
+                        columns.Bound(p => p.ShopIdentifier).Title(" شناسه غرفه").Width(100).HeaderHtmlAttributes(new { style = "text-align:center" }).HtmlAttributes(new { style = "text-align:center" });
+                        columns.Bound(p => p.ShopId).Title("Id").Width(1).HeaderHtmlAttributes(new { style = "display:none" }).HtmlAttributes(new { style = "display:none", type = "ShopId" });
+
+                    })
+                    .Pageable(pageable => pageable
+                                      .Refresh(true)
+                                      .PageSizes(true)
+                                      .ButtonCount(5))
+                    .Sortable()
+                    .Selectable(selectable => selectable.Mode(GridSelectionMode.Single))
+                    .PersistSelection(true)
+                    .Filterable(ftb => ftb.Mode(GridFilterMode.Menu))
+                    //.Events(events => events.DataBound("onDataBound"))
+                    .DataSource(dataSource => dataSource
+                        .Ajax()
+                        .PageSize(10)
+                        .ServerOperation(false)
+                        ).HtmlAttributes(new { style = "font-family:Vazir,Tahoma;font-size:12px" })
+                )
+        </div>
+
+    </div>
+
+
+</div>
+
+@section Scripts {
+
+
+
+    <script>
+        var ViewName = "Shops";
+        $(document).ready(function (e) {
+
+
+            $("#Btn" + ViewName + "New").click(function (e) {
+
+                showWindow("تعریف غرفه جدید", "Market/ShopDefine", "0", true, "medium", refreshShops);
+
+            });
+
+            $("#Btn"+ViewName+"Edit").click(function (e) {
+                
+                var Id = 0;
+
+                var selectedItem = $("#GridShop tr.k-state-selected")
+
+                if ($(selectedItem).length == 0) {
+
+                    showNotification("هشدار", "لطفا ابتدا یک غرفه را انتخاب نمایید", "error");
+
+                }
+                else {
+                    Id = $(selectedItem).find("td[type=ShopId]").html();
+                    
+
+                    showWindow("ویرایش  غرفه", "Market/ShopDefine", Id, true, "medium", refreshShops);
+                }
+
+
+
+            });
+
+
+             $("#Btn"+ViewName+"Delete").click(function (e) {
+
+                 var selectedItem = $("#GridShop tr.k-state-selected")
+                if ($(selectedItem).length == 0) {
+
+                    showNotification("هشدار", "لطفا ابتدا یک غرفه را انتخاب نمایید", "error");
+
+                }
+                else {
+
+                    showConfirm("حذف  شغل", "آیا جهت حذف غرفه انتخاب شده مطمئن هستید؟", deleteShop);
+
+                }
+
+
+
+            });
+
+        });
+
+        function deleteShop() {
+            var selectedItem = $("#GridShop tr.k-state-selected");
+            var Id = $(selectedItem).find("td[type=ShopId]").html();
+
+           $.ajax({
+                type: "POST",
+                url: "@Url.Action("DeleteShop")",
+                data: {Id: Id},
+                dataType: "json",
+               success: function (data) {
+
+                   showNotification("حذف غرفه", data.ResultMessage, data.ResultType);
+                   if (data.ResultType == "success") {
+                       refreshShops();
+                   }
+                },
+               error: function (req, status, error) {
+                    showNotification("حذف غرفه", error, "error");
+
+                }
+            });
+        }
+
+
+
+
+        function refreshShops() {
+
+            $("span#MarketShops_BtnRefresh").click();
+            var tabStrip = $("#tabstrip").kendoTabStrip().data("kendoTabStrip");
+            tabStrip.reload("li[dialogName=MarketShops]");
+
+        }
+
+
+
+    </script>
+}

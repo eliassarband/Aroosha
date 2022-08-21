@@ -1,0 +1,148 @@
+﻿@model IEnumerable<Aroosha.Models.GroupModel>
+
+@{
+Layout = "_ToolbarLayout";
+}
+
+
+<div id="container">
+
+
+    <div class="row">
+        <div class="col-12">
+            @(Html.Kendo().Grid(Model)
+                    .Name("GridGroup")
+                    .Columns(columns =>
+                    {
+
+                        columns.Bound(p => p.GroupName).Title("نام گروه").Width(150).HeaderHtmlAttributes(new { style = "text-align:center" }).HtmlAttributes(new { style = "text-align:center" });
+                        columns.Bound(p => p.GroupUserCount).Title("تعداد اعضا").Width(60).HeaderHtmlAttributes(new { style = "text-align:center" }).HtmlAttributes(new { style = "text-align:center" });
+                        columns.Bound(p => p.GroupId).Title("Id").Width(1).HeaderHtmlAttributes(new { style = "display:none" }).HtmlAttributes(new { style = "display:none", type = "GroupId" });
+                    })
+                    .Pageable(pageable => pageable
+                                      .Refresh(true)
+                                      .PageSizes(true)
+                                      .ButtonCount(5))
+                    .Sortable()
+                    .Selectable(selectable => selectable.Mode(GridSelectionMode.Single))
+                    .PersistSelection(true)
+                    .Filterable(ftb => ftb.Mode(GridFilterMode.Menu))
+                    //.Events(events => events.DataBound("onDataBound"))
+                    .DataSource(dataSource => dataSource
+                        .Ajax()
+                        .PageSize(10)
+                        .ServerOperation(false)
+                        ).HtmlAttributes(new { style = "font-family:Vazir,Tahoma;font-size:12px" })
+            )
+        </div>
+
+    </div>
+
+
+</div>
+
+@section Scripts {
+
+    <script>
+        var ViewName = "Groups";
+        $(document).ready(function (e) {
+
+        
+
+            $("#Btn" + ViewName + "New").click(function (e) {
+                
+                showWindow("تعریف گروه جدید", "Security/GroupDefine", "0", true, "medium", refreshGroup);
+
+            });
+
+            $("#Btn"+ViewName+"Edit").click(function (e) {
+
+                var selectedItem = $("#GridGroup tr.k-state-selected")
+                var Id = 0;
+                if ($(selectedItem).length == 0) {
+
+                    showNotification("هشدار", "لطفا ابتدا یک گروه را انتخاب نمایید", "error");
+
+                }
+                else {
+                    Id = $(selectedItem).find("td[type=GroupId]").html();
+                    showWindow("ویرایش گروه", "Security/GroupDefine", Id, true, "medium", refreshGroup);
+                }
+
+
+
+            });
+
+            $("#Btn"+ViewName+"GroupUsers").click(function (e) {
+
+                var selectedItem = $("#GridGroup tr.k-state-selected")
+                var Id = 0;
+                if ($(selectedItem).length == 0) {
+
+                    showNotification("هشدار", "لطفا ابتدا یک گروه را انتخاب نمایید", "error");
+
+                }
+                else {
+                    Id = $(selectedItem).find("td[type=GroupId]").html();
+                    showWindow("انتخاب اعضای گروه", "Security/GroupUsers", Id, true, "medium", refreshGroup);
+                }
+
+
+
+            });
+
+             $("#Btn"+ViewName+"Delete").click(function (e) {
+
+                var selectedItem = $("#GridGroup tr.k-state-selected")
+                if ($(selectedItem).length == 0) {
+
+                    showNotification("هشدار", "لطفا ابتدا یک گروه را انتخاب نمایید", "error");
+
+                }
+                else {
+
+                    showConfirm("حذف گروه", "آیا جهت حذف گروه انتخاب شده مطمئن هستید؟", deleteGroup);
+
+                }
+
+
+
+            });
+
+        });
+
+        function deleteGroup() {
+            var selectedItem = $("#GridGroup tr.k-state-selected");
+            var Id = $(selectedItem).find("td[type=GroupId]").html();
+
+           $.ajax({
+                type: "POST",
+                url: "@Url.Action("DeleteGroup")",
+                data: {Id: Id},
+                dataType: "json",
+               success: function (data) {
+
+                   showNotification("حذف گروه", data.ResultMessage, data.ResultType);
+                   if (data.ResultType == "success") {
+                       refreshGroups();
+                   }
+                },
+               error: function (req, status, error) {
+                    showNotification("حذف گروه", error, "error");
+
+                }
+            });
+        }
+
+
+        function refreshGroup() {
+
+            $("span#SecurityGroups_BtnRefresh").click();
+            var tabStrip = $("#tabstrip").kendoTabStrip().data("kendoTabStrip");
+            tabStrip.reload("li[dialogName=SecurityGroups]");
+        }
+
+
+
+   </script>
+}

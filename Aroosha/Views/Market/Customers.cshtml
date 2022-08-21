@@ -1,0 +1,144 @@
+﻿@model IEnumerable<Aroosha.Models.CustomerModel>
+
+@{
+    Layout = "_ToolbarLayout";
+}
+
+<div id="container">
+
+
+    <div class="row">
+        <div class="col-12">
+            @(Html.Kendo().Grid(Model)
+                    .Name("GridCustomer")
+                    .Columns(columns =>
+                    {
+
+                        columns.Bound(p => p.CustomerFullName).Title("نام  مشتری").Width(200).HeaderHtmlAttributes(new { style = "text-align:center" }).HtmlAttributes(new { style = "text-align:center" });
+                        columns.Bound(p => p.CustomerNationalCode).Title("کد ملی").Width(150).HeaderHtmlAttributes(new { style = "text-align:center" }).HtmlAttributes(new { style = "text-align:center" });
+                        columns.Bound(p => p.CustomerMobileNumber).Title(" شماره موبایل").Width(150).HeaderHtmlAttributes(new { style = "text-align:center" }).HtmlAttributes(new { style = "text-align:center" });
+                        columns.Bound(p => p.CustomerjobGroupName).Title("گروه شغلی").Width(200).HeaderHtmlAttributes(new { style = "text-align:center" }).HtmlAttributes(new { style = "text-align:center" });
+                        columns.Bound(p => p.CustomerId).Title("Id").Width(1).HeaderHtmlAttributes(new { style = "display:none" }).HtmlAttributes(new { style = "display:none", type = "CustomerId" });
+                        columns.Bound(p => p.CustomerFirstName).Title("FirstName").Width(1).HeaderHtmlAttributes(new { style = "display:none" }).HtmlAttributes(new { style = "display:none", type = "CustomerFirstName" });
+                        columns.Bound(p => p.CustomerLastName).Title("LastName").Width(1).HeaderHtmlAttributes(new { style = "display:none" }).HtmlAttributes(new { style = "display:none", type = "CustomerLastName" });
+                        columns.Bound(p => p.CustomerJobGroupId).Title("JobGroupId").Width(1).HeaderHtmlAttributes(new { style = "display:none" }).HtmlAttributes(new { style = "display:none", type = "CustomerJobGroupId" });
+
+                    })
+                    .Pageable(pageable => pageable
+                                      .Refresh(true)
+                                      .PageSizes(true)
+                                      .ButtonCount(5))
+                    .Sortable()
+                    .Selectable(selectable => selectable.Mode(GridSelectionMode.Single))
+                    .PersistSelection(true)
+                    .Filterable(ftb => ftb.Mode(GridFilterMode.Menu))
+                    //.Events(events => events.DataBound("onDataBound"))
+                    .DataSource(dataSource => dataSource
+                        .Ajax()
+                        .PageSize(10)
+                        .ServerOperation(false)
+                        ).HtmlAttributes(new { style = "font-family:Vazir,Tahoma;font-size:12px" })
+                )
+        </div>
+
+    </div>
+
+
+</div>
+
+@section Scripts {
+
+
+
+    <script>
+        var ViewName = "Customers";
+        $(document).ready(function (e) {
+
+
+            $("#Btn" + ViewName + "New").click(function (e) {
+
+                showWindow("تعریف مشتری جدید", "Market/CustomerDefine", "0", true, "large", refreshCustomers);
+
+            });
+
+            $("#Btn"+ViewName+"Edit").click(function (e) {
+                
+                var Id = 0;
+
+                var selectedItem = $("#GridCustomer tr.k-state-selected")
+
+                if ($(selectedItem).length == 0) {
+
+                    showNotification("هشدار", "لطفا ابتدا یک مشتری را انتخاب نمایید", "error");
+
+                }
+                else {
+                    Id = $(selectedItem).find("td[type=CustomerId]").html();
+                    
+
+                    showWindow("ویرایش  مشتری", "Market/CustomerDefine", Id, true, "large", refreshCustomers);
+                }
+
+
+
+            });
+
+
+             $("#Btn"+ViewName+"Delete").click(function (e) {
+
+                 var selectedItem = $("#GridCustomer tr.k-state-selected")
+                if ($(selectedItem).length == 0) {
+
+                    showNotification("هشدار", "لطفا ابتدا یک مشتری را انتخاب نمایید", "error");
+
+                }
+                else {
+
+                    showConfirm("حذف  شغل", "آیا جهت حذف مشتری انتخاب شده مطمئن هستید؟", deleteCustomer);
+
+                }
+
+
+
+            });
+
+        });
+
+        function deleteCustomer() {
+            var selectedItem = $("#GridCustomer tr.k-state-selected");
+            var Id = $(selectedItem).find("td[type=CustomerId]").html();
+
+           $.ajax({
+                type: "POST",
+                url: "@Url.Action("DeleteCustomer")",
+                data: {Id: Id},
+                dataType: "json",
+               success: function (data) {
+
+                   showNotification("حذف مشتری", data.ResultMessage, data.ResultType);
+                   if (data.ResultType == "success") {
+                       refreshCustomers();
+                   }
+                },
+               error: function (req, status, error) {
+                    showNotification("حذف مشتری", error, "error");
+
+                }
+            });
+        }
+
+
+
+
+        function refreshCustomers() {
+
+            $("span#MarketCustomers_BtnRefresh").click();
+            var tabStrip = $("#tabstrip").kendoTabStrip().data("kendoTabStrip");
+            tabStrip.reload("li[dialogName=MarketCustomers]");
+
+        }
+
+
+
+    </script>
+}

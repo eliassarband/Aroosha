@@ -1,0 +1,309 @@
+﻿@using Kendo.Mvc.UI.Fluent;
+@using System.Collections.Generic;
+
+@model IEnumerable<Aroosha.Models.MenuCategoryAccessModel>
+
+@{
+    Layout = "_ToolbarLayout";
+}
+
+@section HeadContent
+{
+    <style>
+
+
+        .Category {
+            background-image: url("../Icon/Category.png");
+        }
+
+        .MenuItem {
+            background-image: url("../Icon/Menu.png");
+        }
+
+        .MenuAction {
+            background-image: url("../Icon/Action.png");
+        }
+    </style>
+}
+
+
+<div id="container">
+
+    
+    
+        @using (Html.BeginForm("UserAccess", "Security", FormMethod.Post, new { id = "FormUserAccess", @class = "form" }))
+        {
+            <div class="row">
+                <div class="col-12 col-justify-content-right">
+                    @(
+            Html.Kendo().TreeView()
+                .Name("TreeViewAccess")
+                .Checkboxes(c =>c.CheckChildren(true))
+                .AutoScroll(true)
+                .HtmlAttributes(new
+                {
+                    style = "font-family:Vazir,Tahoma;font-size:12px;"
+                })
+                .Items(items => {
+                    foreach (var category in Model)
+                    {
+                        items.Add()
+                        .Text("دسته بندی : "+category.Name)
+                        .Checked(category.Selected)
+                        .SpriteCssClasses("Category")
+                        .HtmlAttributes(new
+                        {
+                            nodeType="Category",
+                            nodeId=category.Id,
+                            nodeText=category.Name,
+                            nodePriority = category.Priority,
+                            nodeUserId =category.UserId,
+                            nodeGroupId=category.GroupId,
+
+                            style = "font-family:Vazir,Tahoma;font-size:12px;"
+                        })
+                        .Items(mItems => {
+                            foreach (var menuItem in category.MenuAccessModels)
+                            {
+                                mItems.Add()
+                                .Text("منو : "+menuItem.Name)
+                                .Checked(menuItem.Selected)
+                                .SpriteCssClasses("MenuItem")
+                                 .HtmlAttributes(new
+                                 {
+                                     nodeType = "MenuItem",
+                                     nodeId = menuItem.Id,
+                                     nodeText = menuItem.Name,
+                                     nodePriority = menuItem.Priority,
+                                     nodeCategoryId=menuItem.CategoryId,
+                                     nodeUserId = menuItem.UserId,
+                                     nodeGroupId = menuItem.GroupId,
+
+                                     style = "font-family:Vazir,Tahoma;font-size:12px;"
+                                 })
+                                .Items(aItems => {
+                                    foreach (var menuAction in menuItem.MenuActionAccessModels)
+                                    {
+                                        aItems.Add()
+                                        .Text("اکشن : "+menuAction.Title)
+                                        .Checked(menuAction.Selected)
+                                        .SpriteCssClasses("MenuAction")
+                                         .HtmlAttributes(new
+                                         {
+                                             nodeType = "MenuAction",
+                                             nodeName=menuAction.Name,
+                                             nodeId = menuAction.Id,
+                                             nodeText = menuAction.Title,
+                                             nodePriority = menuAction.Priority,
+                                             nodeMenuItemId=menuAction.MenuItemId,
+                                             nodeUserId = menuAction.UserId,
+                                             nodeGroupId = menuAction.GroupId,
+
+                                             style = "font-family:Vazir,Tahoma;font-size:12px;"
+                                         });
+                                    }
+                                });
+                            }
+                        });
+                    }
+                })
+        )
+                </div>
+            </div>
+                 
+                    }
+
+
+                
+
+            </div>
+
+
+            @section Scripts {
+
+
+
+                <script>
+        var ViewName = "UserAccess";
+        var UserId, GroupId;
+        $(document).ready(function (e) {
+
+            UserId = '@ViewData["UserId"]';
+            GroupId = '@ViewData["GroupId"]';
+
+            while ($("#TreeViewAccess").find("li.k-item").find(".k-i-expand").length > 0) {
+                $("#TreeViewAccess").find("li.k-item").find(".k-i-expand").click();
+            }
+
+            while ($("#TreeViewAccess").find("li.k-item").find(".k-i-collapse").length > 0) {
+                $("#TreeViewAccess").find("li.k-item").find(".k-i-collapse").click();
+            }
+
+            $("#Btn" + ViewName + "Save").click(function (e) {
+
+                Save("close");
+
+            });
+
+        });
+
+        function CreateJson() {
+
+            var jsonData = {};
+
+            var CategoryArray = [];
+
+            //alert($("#TreeViewAccess").find("li.k-item").find(".k-i-expand").length)
+            //$("#TreeViewAccess").find("li.k-item").find(".k-i-expand").click();
+            //alert($("#TreeViewAccess").find("li.k-item").find(".k-i-expand").length)
+            //$("#TreeViewAccess").find("li.k-item").find(".k-i-expand").click();
+
+
+
+            $("#TreeViewAccess").find("li.k-item[nodeType=Category]").each(function () {//MenuCategory
+                if ($(this).find(".k-i-expand").length > 0) {
+
+
+
+                    var Category = {};
+                    Category["Id"] = parseInt($(this).attr("nodeId"));
+                    Category["Name"] = $(this).attr("nodeText");
+                    Category["Priority"] = parseInt($(this).attr("nodePriority"));
+                    Category["UserId"] = UserId;
+                    Category["GroupId"] = GroupId;
+                    if ($(this).find('span.k-checkbox-wrapper input[type=checkbox]').is(':checked'))
+                        Category["Selected"] = true;
+                    else
+                        Category["Selected"] = false;
+
+                    //$(this).find(".k-i-expand").click();
+
+
+
+                    var MenuArray = [];
+
+                    $(this).find("li.k-item[nodeType=MenuItem]").each(function () {//MenuItem
+                        if ($(this).find(".k-i-expand").length > 0) {
+
+
+
+                            var Menu = {};
+                            Menu["Id"] = parseInt($(this).attr("nodeId"));
+                            Menu["Name"] = $(this).attr("nodeText");
+                            Menu["Priority"] = parseInt($(this).attr("nodePriority"));
+                            Menu["CategoryId"] = parseInt($(this).attr("nodeCategoryId"));
+                            Menu["UserId"] = UserId;
+                            Menu["GroupId"] = GroupId;
+                            if ($(this).find('span.k-checkbox-wrapper input[type=checkbox]').is(':checked'))
+                                Menu["Selected"] = true;
+                            else
+                                Menu["Selected"] = false;
+
+                            //$(this).find(".k-i-expand").click();
+
+
+
+                            var ActionArray = [];
+
+                            $(this).find("li.k-item[nodeType=MenuAction]").each(function () {//MenuAction
+
+                                var Action = {};
+
+                                Action["Id"] = parseInt($(this).attr("nodeId"));
+                                Action["Name"] = $(this).attr("nodeName");
+                                Action["Title"] = $(this).attr("nodeText");
+                                Action["Priority"] = parseInt($(this).attr("nodePriority"));
+                                Action["MenuItemId"] = parseInt($(this).attr("nodeMenuItemId")),
+                                Action["UserId"] = UserId;
+                                Action["GroupId"] = GroupId;
+                                if ($(this).find('span.k-checkbox-wrapper input[type=checkbox]').is(':checked'))
+                                    Action["Selected"] = true;
+                                else
+                                    Action["Selected"] = false;
+
+                                ActionArray.push(Action);
+
+                            });
+
+                            Menu.MenuActionAccessModels = ActionArray;
+
+                            MenuArray.push(Menu);
+                        }
+
+                    });
+
+                    Category.MenuAccessModels = MenuArray;
+
+                    CategoryArray.push(Category);
+                }
+            });
+
+            jsonData.Mode = "User";
+            jsonData.UserId = UserId;
+            jsonData.GroupId = GroupId;
+            jsonData.MenuCategoryAccessModels = CategoryArray;
+
+            //alert(JSON.stringify(jsonData))
+
+            $("#TreeViewAccess").find("li.k-item").find(".k-i-collapse").click();
+
+            return jsonData;
+        }
+
+        function Save(action) {
+
+            var valdata = CreateJson();
+
+            //alert(JSON.stringify(valdata))
+            //$("#txtTest").val(JSON.stringify(valdata))
+            //return;
+
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("SaveUserAccess")",
+                data: valdata,
+                dataType: "json",
+                success: function (data) {
+
+                    showNotification("ذخیره دسترسی کاربر", data.ResultMessage, data.ResultType);
+                    Id = data.Id;
+                    if (data.ResultType == "success") {
+                        //var JobGroupId = $("#JobGroupId").val();
+                        if (action == "new") {
+                            $("span#SecurityUserAccess_BtnClose").click();
+                            Id = 0;
+                            showWindow("مدیریت دسترسی کاربران", "Security/UserAccess", Id + "/" + JobGroupId, true, "medium", refreshUserAccess);
+                        }
+                        else if (action == "continue") {
+                            $("span#SecurityUserAccess_BtnClose").click();
+
+                            showWindow("مدیریت دستزسی کاربران", "Security/UserAccess", Id + "/" + JobGroupId, true, "medium", refreshUserAccess);
+                        }
+                        else {
+                            $("span#SecurityUserAccess_BtnClose").click();
+                        }
+                    }
+                },
+                error: function (req, status, error) {
+                    showNotification("ذخیره دسترسی کاربران", error, "error");
+
+                }
+            });
+
+        }
+
+
+                    function refreshUserAccess() {
+
+            $("span#SecurityUserAccess_BtnRefresh").click();
+            var tabStrip = $("#tabstrip").kendoTabStrip().data("kendoTabStrip");
+            tabStrip.reload("li[dialogName=SecurityUserAccess]");
+
+        }
+
+
+
+                </script>
+            }
+
+

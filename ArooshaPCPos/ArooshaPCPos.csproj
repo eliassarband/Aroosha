@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup Label="Globals">
+    <SccProjectName>SAK</SccProjectName>
+    <SccProvider>SAK</SccProvider>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccLocalPath>SAK</SccLocalPath>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Kiccc.Ing.PcPos">
+      <HintPath>..\..\..\..\PCPos_Dll\Kiccc.Ing.PcPos.dll</HintPath>
+    </Reference>
+    <Reference Include="PAX.PCPOS">
+      <HintPath>..\..\..\..\PCPos_Dll\PAX.PCPOS.dll</HintPath>
+    </Reference>
+    <Reference Include="PcPos">
+      <HintPath>..\..\..\..\PCPos_Dll\PcPos.dll</HintPath>
+    </Reference>
+    <Reference Include="PosInterface">
+      <HintPath>..\..\..\..\PCPos_Dll\PosInterface.dll</HintPath>
+    </Reference>
+    <Reference Include="POS_PC_v3">
+      <HintPath>E:\PC Pos\Behpardakht New Version\pospc lib\POSPC-V3.0 - C#\Simulator\POS_PC Simulator\bin\Debug\POS_PC_v3.dll</HintPath>
+    </Reference>
+    <Reference Include="SSP1126.PcPos">
+      <HintPath>..\..\..\..\PCPos_Dll\SSP1126.PcPos.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,51 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup Label="Globals">
+    <SccProjectName>SAK</SccProjectName>
+    <SccProvider>SAK</SccProvider>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccLocalPath>SAK</SccLocalPath>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Migrations\20210109124830_CreateBasicInformationAndRegionsWothSeedData.cs" />
+    <Compile Remove="Migrations\20210109124830_CreateBasicInformationAndRegionsWothSeedData.Designer.cs" />
+    <Compile Remove="Migrations\20210203080054_UserAndGroupAccess.cs" />
+    <Compile Remove="Migrations\20210203080054_UserAndGroupAccess.Designer.cs" />
+    <Compile Remove="Migrations\20210205162359_JobAndGroups.cs" />
+    <Compile Remove="Migrations\20210205162359_JobAndGroups.Designer.cs" />
+    <Compile Remove="Migrations\20210205162624_JobAndGroups.cs" />
+    <Compile Remove="Migrations\20210205162624_JobAndGroups.Designer.cs" />
+    <Compile Remove="Migrations\20210210224245_MarketStructure.cs" />
+    <Compile Remove="Migrations\20210210224245_MarketStructure.Designer.cs" />
+    <Compile Remove="Migrations\20210210224454_MarketStructure.cs" />
+    <Compile Remove="Migrations\20210210224454_MarketStructure.Designer.cs" />
+    <Compile Remove="Migrations\20210210225910_MarketStructureShops.cs" />
+    <Compile Remove="Migrations\20210210225910_MarketStructureShops.Designer.cs" />
+    <Compile Remove="Migrations\20210210230030_MarketStructureShops.cs" />
+    <Compile Remove="Migrations\20210210230030_MarketStructureShops.Designer.cs" />
+    <Compile Remove="Migrations\20210301124622_Rent.cs" />
+    <Compile Remove="Migrations\20210301124622_Rent.Designer.cs" />
+    <Compile Remove="Migrations\20210317063844_CustomerAndSetting.cs" />
+    <Compile Remove="Migrations\20210317063844_CustomerAndSetting.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="3.1.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Analyzers" Version="3.1.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,662 @@
+﻿@model Aroosha.Models.ReserveDefineModel
+
+@{
+    Layout = "_ToolbarLayout";
+}
+
+@{
+    IEnumerable<CustomerModel> CustomerComboData = ViewData["CustomerComboData"] as IEnumerable<CustomerModel>;
+    IEnumerable<ShopForComboModel> ShopComboData = ViewData["ShopComboData"] as IEnumerable<ShopForComboModel>;
+    IEnumerable<DiscountForComboModel> DiscountTypeComboData = ViewData["DiscountTypeComboData"] as IEnumerable<DiscountForComboModel>;
+    IEnumerable<MarketScheduleModel> MarketScheduleComboData = ViewData["MarketScheduleComboData"] as IEnumerable<MarketScheduleModel>;
+}
+
+
+<div class="container">
+
+    @using (Html.BeginForm("ReserveDefine", "Market", FormMethod.Post, new { id = "FormReserveDefine", @class = "form" }))
+    {
+
+    <div class="row">
+        <div class="col-6 col-justify-content-right">
+            <span data-role="floatinglabel" class="k-floating-label-container k-state-focused" style="width: 90%;">
+                <label class="k-label k-input-label" for="ReserveDefineCustomerId">مشتری</label>
+                <span class="k-widget k-numerictextbox" style="width: 100%; font-family: Vazir, Tahoma; font-size: 12px;">
+                    <span class="k-numeric-wrap k-state-default">
+                        @(Html.Kendo().ComboBoxFor(model => model.ReserveDefineCustomerId)
+                          .HtmlAttributes(new { style = "width: 100%;font-family:Vazir,Tahoma;font-size:12px" })
+                          .Placeholder("مشتری")
+                          //.DataTextField("Name")
+                          //.DataValueField("Id")
+                          .Filter(FilterType.Contains)
+                          .AutoBind(true)
+                          .Items(items =>
+                          {
+                              foreach (var item in CustomerComboData)
+                              {
+
+                                  items.Add()
+                                  .Text(item.CustomerFullName)
+                                  .Value(item.CustomerId.ToString());
+
+                              }
+                          })
+                    )
+                    </span>
+                </span>
+            </span>
+        </div>
+        <div class="col-6 col-justify-content-right">
+            @(Html.Kendo().IntegerTextBoxFor(model => model.ReserveDefineCustomerBalance)
+                        .Placeholder("مانده اعتبار مشتری")
+                        .Enable(false)
+                        .Label(label => label
+                            .Content("مانده اعتبار مشتری")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+
+                    )
+        </div>
+        <div class="col-12 col-justify-content-right">
+            <span data-role="floatinglabel" class="k-floating-label-container k-state-focused" style="width: 90%;">
+                <label class="k-label k-input-label" for="ReserveDefineMarketScheduleDetailId">تاریخ رزرو</label>
+                <span class="k-widget k-numerictextbox" style="width: 100%; font-family: Vazir, Tahoma; font-size: 12px;">
+                    <span class="k-numeric-wrap k-state-default">
+                        @(Html.Kendo().ComboBoxFor(model => model.ReserveDefineMarketScheduleDetailId)
+                          .HtmlAttributes(new { style = "width: 100%;font-family:Vazir,Tahoma;font-size:12px" })
+                          .Placeholder("تاریخ رزرو")
+                          //.DataTextField("Name")
+                          //.DataValueField("Id")
+                          .Filter(FilterType.Contains)
+                          .AutoBind(true)
+                          .Items(items =>
+                          {
+                              foreach (var item in MarketScheduleComboData)
+                              {
+
+                                  items.Add()
+                                  .Text(item.ComboDescription)
+                                  .Value(item.MarketScheduleDetailId.ToString());
+
+                              }
+                          })
+                    )
+                    </span>
+                </span>
+            </span>
+        </div>
+        <div class="col-8 col-justify-content-right">
+            <span data-role="floatinglabel" class="k-floating-label-container k-state-focused" style="width: 90%;">
+                <label class="k-label k-input-label" for="ReserveDefineShopId">غرفه</label>
+                <span class="k-widget k-numerictextbox" style="width: 100%; font-family: Vazir, Tahoma; font-size: 12px;">
+                    <span class="k-numeric-wrap k-state-default">
+                        @(Html.Kendo().ComboBoxFor(model => model.ReserveDefineShopId)
+                          .HtmlAttributes(new { style = "width: 100%;font-family:Vazir,Tahoma;font-size:12px" })
+                          .Placeholder("غرفه")
+                          //.DataTextField("Name")
+                          //.DataValueField("Id")
+                          .Filter(FilterType.Contains)
+                          .AutoBind(true)
+                          .Items(items =>
+                          {
+                              foreach (var item in ShopComboData)
+                              {
+
+                                  items.Add()
+                                  .Text(item.StructureAddress)
+                                  .Value(item.Id.ToString());
+
+                              }
+                          })
+                    )
+                    </span>
+                </span>
+            </span>
+        </div>
+        <div class="col-4 col-justify-content-right">
+            @(Html.Kendo().TextBoxFor(model => model.ReserveDefineShopIdentifier)
+                        .Placeholder("شناسه غرفه")
+                        .Readonly(true)
+                        .Label(label => label
+                            .Content("شناسه غرفه")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+
+                    )
+        </div>
+        <div class="col-6 col-justify-content-right">
+            @(Html.Kendo().TextBoxFor(model => model.ReserveDefineTariffName)
+                        .Placeholder("تعرفه غرفات")
+                        .Readonly(true)
+                        .Label(label => label
+                            .Content("تعرفه غرفات")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+
+                    )
+        </div>
+        <div class="col-6 col-justify-content-right">
+            @(Html.Kendo().IntegerTextBoxFor(model => model.ReserveDefineTariffAmount)
+                        .Placeholder("مبلغ تعرفه")
+                        .Enable(false)
+                        .Label(label => label
+                            .Content("مبلغ تعرفه")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+
+                    )
+        </div>
+        <div class="col-4 col-justify-content-right">
+            <span data-role="floatinglabel" class="k-floating-label-container k-state-focused" style="width: 90%;">
+                <label class="k-label k-input-label" for="ReserveDefineDiscountId">منبع تخفیف</label>
+                <span class="k-widget k-numerictextbox" style="width: 100%; font-family: Vazir, Tahoma; font-size: 12px;">
+                    <span class="k-numeric-wrap k-state-default">
+                        @(Html.Kendo().ComboBoxFor(model => model.ReserveDefineDiscountId)
+                          .HtmlAttributes(new { style = "width: 100%;font-family:Vazir,Tahoma;font-size:12px" })
+                          .Placeholder("منبع تخفیف")
+                          //.DataTextField("Name")
+                          //.DataValueField("Id")
+                          .Filter(FilterType.Contains)
+                          .AutoBind(true)
+                          .Items(items =>
+                          {
+                              foreach (var item in DiscountTypeComboData)
+                              {
+
+                                  items.Add()
+                                  .Text(item.DiscountName)
+                                  .Value(item.DiscountId.ToString());
+
+                              }
+                          })
+                    )
+                    </span>
+                </span>
+            </span>
+        </div>
+        <div class="col-4 col-justify-content-right">
+            @(Html.Kendo().IntegerTextBoxFor(model => model.ReserveDefineDiscounPercent)
+                        .Placeholder("درصد تخفیف")
+                        .Enable(true)
+                        .Label(label => label
+                            .Content("درصد تخفیف")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+
+                    )
+        </div>
+        <div class="col-4 col-justify-content-right">
+            @(Html.Kendo().IntegerTextBoxFor(model => model.ReserveDefineDiscountAmount)
+                        .Placeholder("مبلغ تخفیف")
+                        .Enable(true)
+                        .Label(label => label
+                            .Content("مبلغ تخفیف")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+
+                    )
+        </div>
+        <div class="col-6 col-justify-content-right">
+            @(Html.Kendo().IntegerTextBoxFor(model => model.ReserveDefineAmount)
+                        .Placeholder("مبلغ قابل پرداخت")
+                        .Enable(false)
+                        .Label(label => label
+                            .Content("مبلغ قابل پرداخت")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+
+                    )
+        </div>
+        
+        <div class="col-12 col-justify-content-right">
+            @(Html.Kendo().TextBoxFor(model => model.ReserveDefineDescription)
+                        .Placeholder("توضیحات")
+                        .Label(label => label
+                            .Content("توضیحات")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+
+                    )
+        </div>
+
+
+        @Html.HiddenFor(model => model.ReserveDefineId)
+        @Html.HiddenFor(model => model.ReserveDefineDate)
+        @Html.HiddenFor(model => model.ReserveDefineTariffId)
+
+    </div>
+
+    }
+
+
+</div>
+
+
+@section Scripts {
+
+
+
+    <script>
+        var ViewName = "ReserveDefine";
+        $(document).ready(function (e) {
+
+            $("span.k-floating-label-container").css("width", "100%");
+
+            $("#Btn" + ViewName + "Save").click(function (e) {
+
+               Save("close");
+            });
+
+            $("#Btn" + ViewName + "SaveAndContinue").click(function (e) {
+
+                Save("continue");
+
+            });
+
+
+            $("#Btn" + ViewName + "SaveAndNew").click(function (e) {
+
+                Save("new");
+
+            });
+
+            var CustomerComboBox = $("#ReserveDefineCustomerId").data("kendoComboBox");
+            CustomerComboBox.bind("select", Customer_OnSelect);
+
+            var DiscountComboBox = $("#ReserveDefineDiscountId").data("kendoComboBox");
+            DiscountComboBox.bind("select", Discount_OnSelect);
+
+            var DiscountPercentTextBox = $("#ReserveDefineDiscounPercent").data("kendoNumericTextBox");
+            DiscountPercentTextBox.bind("change", DiscountPercent_OnChange);
+
+            var DiscountAmountTextBox = $("#ReserveDefineDiscountAmount").data("kendoNumericTextBox");
+            DiscountAmountTextBox.bind("change", DiscountAmount_OnChange);
+
+            var ShopComboBox = $("#ReserveDefineShopId").data("kendoComboBox");
+            ShopComboBox.bind("select", Shop_OnSelect);
+
+            var MarketScheduleDetailComboBox = $("#ReserveDefineMarketScheduleDetailId").data("kendoComboBox");
+            MarketScheduleDetailComboBox.bind("select", MarketScheduleDetail_OnSelect);
+
+        });
+
+        function Customer_OnSelect(e) {
+
+                if (e.item) {
+                    var dataItem = this.dataItem(e.item.index());
+                    var CustomerId = dataItem.Value;
+
+                    var url = "@Url.Action("GetCustomerDetail")";
+
+                    url += "/" + CustomerId;
+
+                    $.ajax({
+                        type: "GET",
+                        url: url,
+                        success: function (data) {
+
+                            var json = JSON.parse(data);
+
+                            var Balance = json.CustomerDefineBalance;
+
+                            var BalanceTextBox = $("#ReserveDefineCustomerBalance").data("kendoNumericTextBox");
+                            BalanceTextBox.value(Balance);
+                        },
+                        error: function (req, status, error) {
+                           // alert("11"+error)
+                        }
+                    });
+                }
+
+        }
+
+        function Discount_OnSelect(e) {
+             if (e.item) {
+                   var dataItem = this.dataItem(e.item.index());
+                 var DiscountId = dataItem.Value;
+
+                 var MarketScheduleDetailComboBox = $("#ReserveDefineMarketScheduleDetailId").data("kendoComboBox");
+                 var MarketScheduleDetailId = MarketScheduleDetailComboBox.value();
+
+                var url = "@Url.Action("GetDiscountDetail")";
+
+                url += "/" + MarketScheduleDetailId+"/"+DiscountId;
+
+                $.ajax({
+                    type: "GET",
+                    url: url,
+                    success: function (data) {
+
+                        var json = JSON.parse(data);
+
+                        var DiscountPercent = json.DiscountDefineDefaultPercent;
+                        var DiscountAmount = json.DiscountDefineDefaultPrice;
+
+                        var DiscountPercentTextBox = $("#ReserveDefineDiscounPercent").data("kendoNumericTextBox");
+                        DiscountPercentTextBox.value(DiscountPercent);
+
+                        var DiscountAmountTextBox = $("#ReserveDefineDiscountAmount").data("kendoNumericTextBox");
+                        DiscountAmountTextBox.value(DiscountAmount);
+
+                        CalculateDiscount();
+                        CalculateAmount();
+                    },
+                    error: function (req, status, error) {
+                        //alert("11"+error)
+                    }
+                });
+            }
+        }
+
+        function MarketScheduleDetail_OnSelect(e) {
+            if (e.item) {
+                var dataItem = this.dataItem(e.item.index());
+                var MarketScheduleDetailId = dataItem.Value;
+
+                var ShopComboBox = $("#ReserveDefineShopId").data("kendoComboBox");
+                var ShopId = ShopComboBox.value();
+
+                var url = "@Url.Action("GetTariffDetail")";
+
+                url += "/" + MarketScheduleDetailId + "/" + ShopId;
+
+                $.ajax({
+                    type: "GET",
+                    url: url,
+                    success: function (data) {
+
+                        var json = JSON.parse(data);
+
+                        var TariffName = json.TariffDefineName;
+                        var TariffAmount = json.TariffDefineReserveAmount;
+
+                        var TariffNameTextBox = $("#ReserveDefineTariffName").data("kendoTextBox");
+                        TariffNameTextBox.value(TariffName);
+
+                        var TariffAmountTextBox = $("#ReserveDefineTariffAmount").data("kendoNumericTextBox");
+                        TariffAmountTextBox.value(TariffAmount);
+
+                        $("#ReserveDefineTariffId").val(json.TariffDefineId);
+
+                        CalculateDiscount();
+                        CalculateAmount();
+                    },
+                    error: function (req, status, error) {
+                        //alert("11"+error)
+                    }
+                });
+            }
+        }
+
+        function Shop_OnSelect(e) {
+             if (e.item) {
+                   var dataItem = this.dataItem(e.item.index());
+                 var ShopId = dataItem.Value;
+
+                 var MarketScheduleDetailComboBox = $("#ReserveDefineMarketScheduleDetailId").data("kendoComboBox");
+                 var MarketScheduleDetailId = MarketScheduleDetailComboBox.value();
+
+                var url = "@Url.Action("GetTariffDetail")";
+
+                url += "/" + MarketScheduleDetailId+"/"+ShopId;
+
+                $.ajax({
+                    type: "GET",
+                    url: url,
+                    success: function (data) {
+
+                        var json = JSON.parse(data);
+
+                        var TariffName = json.TariffDefineName;
+                        var TariffAmount = json.TariffDefineReserveAmount;
+
+                        var TariffNameTextBox = $("#ReserveDefineTariffName").data("kendoTextBox");
+                        TariffNameTextBox.value(TariffName);
+
+                        var TariffAmountTextBox = $("#ReserveDefineTariffAmount").data("kendoNumericTextBox");
+                        TariffAmountTextBox.value(TariffAmount);
+
+                        $("#ReserveDefineTariffId").val(json.TariffDefineId);
+
+                        CalculateDiscount();
+                        CalculateAmount();
+                    },
+                    error: function (req, status, error) {
+                        //alert("11"+error)
+                    }
+                });
+
+                 //////////////////////////////////////////
+
+                var url = "@Url.Action("GetShopDetail")";
+
+                url += "/"+ShopId;
+
+                $.ajax({
+                    type: "GET",
+                    url: url,
+                    success: function (data) {
+
+                        var json = JSON.parse(data);
+
+                        var ShopIdentifier = json.ShopDefineIdentifier;
+
+                        var ReserveDefineShopIdentifierTextBox = $("#ReserveDefineShopIdentifier").data("kendoTextBox");
+                        ReserveDefineShopIdentifierTextBox.value(ShopIdentifier);
+
+                    },
+                    error: function (req, status, error) {
+                        //alert("11"+error)
+                    }
+                });
+            }
+        }
+
+        function DiscountPercent_OnChange(e) {
+            var DiscountPercentTextBox = $("#ReserveDefineDiscounPercent").data("kendoNumericTextBox");
+            //DiscountPercentTextBox.value(DiscountPercent);
+            var DiscountPercent = DiscountPercentTextBox.value();
+
+            var DiscountAmountTextBox = $("#ReserveDefineDiscountAmount").data("kendoNumericTextBox");
+            //DiscountAmountTextBox.value(DiscountAmount);
+            var DiscountAmount = DiscountAmountTextBox.value();
+
+            var TariffAmountTextBox = $("#ReserveDefineTariffAmount").data("kendoNumericTextBox");
+            //TariffAmountTextBox.value(TariffAmount);
+            var TariffAmount = TariffAmountTextBox.value();
+
+            if (TariffAmount > 0 && DiscountPercent > 0) {
+                DiscountAmount = parseInt(TariffAmount) * parseInt(DiscountPercent) / 100;
+            }
+            else if (TariffAmount > 0 && DiscountPercent <= 0) {
+                DiscountAmount = 0;
+            }
+
+            DiscountAmountTextBox.value(DiscountAmount);
+
+            CalculateAmount();
+        }
+
+        function DiscountAmount_OnChange(e) {
+            var DiscountPercentTextBox = $("#ReserveDefineDiscounPercent").data("kendoNumericTextBox");
+            //DiscountPercentTextBox.value(DiscountPercent);
+            var DiscountPercent = DiscountPercentTextBox.value();
+
+            var DiscountAmountTextBox = $("#ReserveDefineDiscountAmount").data("kendoNumericTextBox");
+            //DiscountAmountTextBox.value(DiscountAmount);
+            var DiscountAmount = DiscountAmountTextBox.value();
+
+            var TariffAmountTextBox = $("#ReserveDefineTariffAmount").data("kendoNumericTextBox");
+            //TariffAmountTextBox.value(TariffAmount);
+            var TariffAmount = TariffAmountTextBox.value();
+
+            if (TariffAmount > 0 && DiscountAmount> 0) {
+                DiscountPercent = parseInt(DiscountAmount) * 100 / parseInt(TariffAmount);
+            }
+            else if (TariffAmount > 0 && DiscountAmount <= 0) {
+                DiscountPercent = 0;
+            }
+
+            DiscountPercentTextBox.value(DiscountPercent);
+
+            CalculateAmount();
+        }
+
+        function CalculateDiscount() {
+
+            var DiscountPercentTextBox = $("#ReserveDefineDiscounPercent").data("kendoNumericTextBox");
+            //DiscountPercentTextBox.value(DiscountPercent);
+            var DiscountPercent = DiscountPercentTextBox.value();
+
+            var DiscountAmountTextBox = $("#ReserveDefineDiscountAmount").data("kendoNumericTextBox");
+            //DiscountAmountTextBox.value(DiscountAmount);
+            var DiscountAmount = DiscountAmountTextBox.value();
+
+            var TariffAmountTextBox = $("#ReserveDefineTariffAmount").data("kendoNumericTextBox");
+            //TariffAmountTextBox.value(TariffAmount);
+            var TariffAmount = TariffAmountTextBox.value();
+
+            if (TariffAmount > 0 && DiscountPercent > 0 && DiscountAmount <= 0) {
+                DiscountAmount = parseInt(TariffAmount) * parseInt(DiscountPercent) / 100;
+            }
+            else if (TariffAmount > 0 && DiscountAmount > 0) {
+                DiscountPercent = parseInt(DiscountAmount) * 100 / parseInt(TariffAmount);
+            }
+            else {
+                DiscountPercent = 0;
+                DiscountAmount = 0;
+            }
+
+            DiscountPercentTextBox.value(DiscountPercent);
+            DiscountAmountTextBox.value(DiscountAmount);
+
+            CalculateAmount();
+        }
+
+        function CalculateAmount() {
+            var DiscountPercentTextBox = $("#ReserveDefineDiscounPercent").data("kendoNumericTextBox");
+            //DiscountPercentTextBox.value(DiscountPercent);
+            var DiscountPercent = DiscountPercentTextBox.value();
+
+            var DiscountAmountTextBox = $("#ReserveDefineDiscountAmount").data("kendoNumericTextBox");
+            //DiscountAmountTextBox.value(DiscountAmount);
+            var DiscountAmount = DiscountAmountTextBox.value();
+
+            var TariffAmountTextBox = $("#ReserveDefineTariffAmount").data("kendoNumericTextBox");
+            //TariffAmountTextBox.value(TariffAmount);
+            var TariffAmount = TariffAmountTextBox.value();
+
+            var ReserveDefineAmountTextBox = $("#ReserveDefineAmount").data("kendoNumericTextBox");
+            //TariffAmountTextBox.value(TariffAmount);
+            var ReserveAmount = ReserveDefineAmountTextBox.value();
+
+            if (TariffAmount > 0 && DiscountAmount > 0) {
+                ReserveAmount = TariffAmount - DiscountAmount;
+            }
+            else if (TariffAmount > 0 && DiscountAmount <= 0) {
+                ReserveAmount = ReserveAmount;
+            }
+            else {
+                ReserveAmount = 0;
+            }
+
+            ReserveDefineAmountTextBox.value(ReserveAmount);
+
+
+        }
+
+
+        function Save(action) {
+
+
+            //var valdata = $("#FormReserveDefine").serialize();
+            var jsonData = {};
+            jsonData["ReserveDefineId"] = parseInt($("#ReserveDefineId").val());
+            //jsonData["ReserveDefineDate"] = "";
+            
+
+            var MarketScheduleDetailComboBox = $("#ReserveDefineMarketScheduleDetailId").data("kendoComboBox");
+            jsonData["ReserveDefineMarketScheduleDetailId"] = MarketScheduleDetailComboBox.value();
+            //jsonData["ReserveDefineMarketScheduleDescription"] = "";
+
+            var CustomerComboBox = $("#ReserveDefineCustomerId").data("kendoComboBox");
+            jsonData["ReserveDefineCustomerId"] = CustomerComboBox.value();
+
+            var ShopComboBox = $("#ReserveDefineShopId").data("kendoComboBox");
+            jsonData["ReserveDefineShopId"] = ShopComboBox.value();
+
+            jsonData["ReserveDefineTariffId"] = $("#ReserveDefineTariffId").val();
+
+            var TariffAmountTextBox=$("#ReserveDefineTariffAmount").data("kendoNumericTextBox");
+            jsonData["ReserveDefineTariffAmount"] = TariffAmountTextBox.value();
+            
+            var DiscountComboBox = $("#ReserveDefineDiscountId").data("kendoComboBox");
+            jsonData["ReserveDefineDiscountId"] = DiscountComboBox.value();
+
+            var DiscountAmountTextBox = $("#ReserveDefineDiscountAmount").data("kendoNumericTextBox");
+            jsonData["ReserveDefineDiscountAmount"] = DiscountAmountTextBox.value();
+
+            var DiscountPercentTextBox = $("#ReserveDefineDiscounPercent").data("kendoNumericTextBox");
+            jsonData["ReserveDefineDiscounPercent"] = DiscountPercentTextBox.value();
+
+            var ReserveDefineAmountTextBox = $("#ReserveDefineAmount").data("kendoNumericTextBox");
+            jsonData["ReserveDefineAmount"] = ReserveDefineAmountTextBox.value();
+
+            var DescriptionTextBox = $("#ReserveDefineDescription").data("kendoTextBox");
+            jsonData["ReserveDefineDescription"] = DescriptionTextBox.value();
+
+            
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("SaveReserve")",
+                data: jsonData,
+                dataType: "json",
+                success: function (data) {
+
+                    showNotification("ذخیره رزرو", data.ResultMessage, data.ResultType);
+                    Id = data.Id;
+                    if (data.ResultType == "success") {
+                        if (action == "new") {
+                            $("span#MarketReserveDefine_BtnClose").click();
+                            Id = 0;
+                            showWindow("ثبت رزرو جدید", "Market/ReserveDefine", Id, true, "large", refreshReserveDefine);
+                        }
+                        else if (action == "continue") {
+                            $("span#MarketReserveDefine_BtnClose").click();
+
+                            showWindow("ثبت رزرو جدید", "Market/ReserveDefine", Id, true, "large", refreshReserveDefine);
+                        }
+                        else {
+                            $("span#MarketReserveDefine_BtnClose").click();
+                        }
+                    }
+                },
+                error: function (req, status, error) {
+                    showNotification("ذخیره رزرو", error, "error");
+
+                }
+            });
+
+        }
+
+
+        function refreshReserveDefine() {
+
+            $("span#MarketReserveDefine_BtnRefresh").click();
+            var tabStrip = $("#tabstrip").kendoTabStrip().data("kendoTabStrip");
+            tabStrip.reload("li[dialogName=MarketReserveDefine]");
+
+        }
+
+
+
+    </script>
+}

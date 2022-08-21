@@ -1,0 +1,151 @@
+﻿@model Aroosha.Models.CustomerDefineModel
+
+@{
+    Layout = "_ToolbarLayout";
+}
+
+<div id="container">
+
+
+    <div class="row">
+        <div class="col-12">
+            @(Html.Kendo().Grid(Model.CustomerCards)
+                    .Name("GridCustomerCard")
+                    .Columns(columns =>
+                    {
+
+                        columns.Bound(p => p.CustomerCardCardCode).Title("شماره کارت").Width(150).HeaderHtmlAttributes(new { style = "text-align:center" }).HtmlAttributes(new { style = "text-align:center" });
+                        columns.Bound(p => p.CustomerCardStartDate).Title("تاریخ شروع").Width(150).HeaderHtmlAttributes(new { style = "text-align:center" }).HtmlAttributes(new { style = "text-align:center" });
+                        columns.Bound(p => p.CustomerCardEndDate).Title(" تاریخ پایان").Width(150).HeaderHtmlAttributes(new { style = "text-align:center" }).HtmlAttributes(new { style = "text-align:center" });
+                        columns.Bound(p => p.CustomerCardActive).Title("وضعیت کارت").Width(50).HeaderHtmlAttributes(new { style = "text-align:center" }).HtmlAttributes(new { style = "text-align:center" }).ClientTemplate("<span id='badge_#=CustomerCardId#' class='badgeActiveStatus_#=CustomerCardActive#'></span>");
+                        columns.Bound(p => p.CustomerCardId).Title("Id").Width(1).HeaderHtmlAttributes(new { style = "display:none" }).HtmlAttributes(new { style = "display:none", type = "CustomerCardId" });
+                        columns.Bound(p => p.CustomerCardCustomerId).Title("CustomerId").Width(1).HeaderHtmlAttributes(new { style = "display:none" }).HtmlAttributes(new { style = "display:none", type = "CustomerCardCustomerId" });
+
+                    })
+                    .Pageable(pageable => pageable
+                                      .Refresh(true)
+                                      .PageSizes(true)
+                                      .ButtonCount(5))
+                    .Sortable()
+                    .Selectable(selectable => selectable.Mode(GridSelectionMode.Single))
+                    .PersistSelection(true)
+                    .Filterable(ftb => ftb.Mode(GridFilterMode.Menu))
+                    //.Events(events => events.DataBound("onDataBound"))
+                    .DataSource(dataSource => dataSource
+                        .Ajax()
+                        .PageSize(10)
+                        .ServerOperation(false)
+                        ).HtmlAttributes(new { style = "font-family:Vazir,Tahoma;font-size:12px" })
+                )
+        </div>
+
+    </div>
+    @Html.HiddenFor(model => model.CustomerDefineId)
+
+</div>
+
+@section Scripts {
+
+
+
+    <script>
+        var ViewName = "CustomerCards";
+        $(document).ready(function (e) {
+
+            $(".badgeActiveStatus_true").kendoBadge({
+                themeColor: 'success',
+                text: 'فعال',
+            });
+
+            $(".badgeActiveStatus_false").kendoBadge({
+                themeColor: 'error',
+                text: 'غیرفعال',
+            });
+
+            $("#Btn" + ViewName + "New").click(function (e) {
+                var CustomerId = $("#CustomerDefineId").val();
+                    
+
+                showWindow("تعریف کارت جدید", "Market/CustomerCardDefine", "0/"+CustomerId, true, "medium", refreshCustomerCard);
+
+            });
+
+            $("#Btn"+ViewName+"Edit").click(function (e) {
+                var CustomerId = $("#CustomerDefineId").val();
+                var Id = 0;
+
+                var selectedItem = $("#GridCustomerCard tr.k-state-selected")
+
+                if ($(selectedItem).length == 0) {
+
+                    showNotification("هشدار", "لطفا ابتدا یک کارت را انتخاب نمایید", "error");
+
+                }
+                else {
+                    Id = $(selectedItem).find("td[type=CustomerCardId]").html();
+                    
+                    showWindow("ویرایش  کارت", "Market/CustomerCardDefine", Id+"/"+CustomerId, true, "medium", refreshCustomerCard);
+                }
+
+
+
+            });
+
+
+             $("#Btn"+ViewName+"Delete").click(function (e) {
+
+                 var selectedItem = $("#GridCustomerCard tr.k-state-selected")
+                if ($(selectedItem).length == 0) {
+
+                    showNotification("هشدار", "لطفا ابتدا یک کارت را انتخاب نمایید", "error");
+
+                }
+                else {
+
+                    showConfirm("حذف  شغل", "آیا جهت حذف کارت انتخاب شده مطمئن هستید؟", deleteCustomerCard);
+
+                }
+
+
+
+            });
+
+        });
+
+        function deleteCustomerCard() {
+            var selectedItem = $("#GridCustomerCard tr.k-state-selected");
+            var Id = $(selectedItem).find("td[type=CustomerCardId]").html();
+
+           $.ajax({
+                type: "POST",
+                url: "@Url.Action("DeleteCustomerCard")",
+                data: {Id: Id},
+                dataType: "json",
+               success: function (data) {
+
+                   showNotification("حذف کارت", data.ResultMessage, data.ResultType);
+                   if (data.ResultType == "success") {
+                       refreshCustomerCard();
+                   }
+                },
+               error: function (req, status, error) {
+                    showNotification("حذف کارت", error, "error");
+
+                }
+            });
+        }
+
+
+
+
+        function refreshCustomerCard() {
+
+            $("span#MarketCustomerCards_BtnRefresh").click();
+            var tabStrip = $("#tabstrip").kendoTabStrip().data("kendoTabStrip");
+            tabStrip.reload("li[dialogName=MarketCustomerCards]");
+        }
+
+
+
+    </script>
+}

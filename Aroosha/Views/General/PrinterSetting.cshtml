@@ -1,0 +1,125 @@
+﻿@model Aroosha.Models.PrinterSettingModel
+
+@{
+    Layout = "_ToolbarLayout";
+}
+
+<div class="container" style="font-family:Vazir,Tahoma;font-size:12px">
+    <div class="row">
+        @using (Html.BeginForm("PrinterSetting", "General", FormMethod.Post, new { id = "FormPrinterSetting", @class = "form" }))
+        {
+            <div class="row">
+                <div class="col-6 col-justify-content-right">
+                    @(Html.Kendo().TextBoxFor(model => model.ComputerName)
+                        .Placeholder("نام دستگاه")
+                        .Label(label => label
+                            .Content("نام دستگاه")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+
+                    )
+                </div>
+                <div class="col-6 col-justify-content-right">
+                    @(Html.Kendo().TextBoxFor(model => model.PrinterName)
+                        .Placeholder("نام پرینتر")
+                        .Label(label => label
+                            .Content("نام پرینتر")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+
+                    )
+                </div>
+            </div>
+            @Html.HiddenFor(model => model.Id)
+           
+
+        }
+
+
+    </div>
+
+
+</div>
+
+@section Scripts {
+
+
+
+    <script>
+        var ViewName = "PrinterSetting";
+        $(document).ready(function (e) {
+
+            $("span.k-floating-label-container").css("width", "100%");
+
+            $("#Btn" + ViewName + "Save").click(function (e) {
+
+                Save("close");
+
+            });
+
+            $("#Btn" + ViewName + "SaveAndContinue").click(function (e) {
+
+                Save("continue");
+
+            });
+
+
+            $("#Btn" + ViewName + "SaveAndNew").click(function (e) {
+
+                Save("new");
+
+            });
+
+
+
+
+        });
+
+
+
+        function Save(action) {
+
+            var valdata = $("#FormPrinterSetting").serialize();
+
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("SavePrinterSetting")",
+                data: valdata,
+                dataType: "json",
+                success: function (data) {
+
+                    showNotification("ذخیره پرینتر", data.ResultMessage, data.ResultType);
+                    Id = data.Id;
+                    if (data.ResultType == "success") {
+                        refreshPrinterSetting();
+                       
+                        $("span#GeneralPrinterSetting_BtnClose").click();
+                        
+                    }
+                },
+                error: function (req, status, error) {
+                    showNotification("ذخیره گروه کاربری", error, "error");
+
+                }
+            });
+
+
+        }
+
+
+        function refreshPrinterSetting() {
+
+            $("span#GeneralPrinterSetting_BtnRefresh").click();
+            var tabStrip = $("#tabstrip").kendoTabStrip().data("kendoTabStrip");
+            tabStrip.reload("li[dialogName=GeneralPrinterSetting]");
+
+        }
+
+
+
+    </script>
+}
+
+

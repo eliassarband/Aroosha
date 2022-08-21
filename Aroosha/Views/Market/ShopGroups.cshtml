@@ -1,0 +1,157 @@
+﻿@model IEnumerable<Aroosha.Models.ShopGroupModel>
+
+@{
+    Layout = "_ToolbarLayout";
+}
+
+<div id="container">
+
+
+    <div class="row">
+        <div class="col-12">
+            @(Html.Kendo().Grid(Model)
+                    .Name("GridShopGroup")
+                    .Columns(columns =>
+                    {
+
+                        columns.Bound(p => p.ShopGroupCode).Title("کد گروه غرفات").Width(80).HeaderHtmlAttributes(new { style = "text-align:center" }).HtmlAttributes(new { style = "text-align:center" });
+                        columns.Bound(p => p.ShopGroupName).Title("نام گروه غرفات").Width(200).HeaderHtmlAttributes(new { style = "text-align:center" }).HtmlAttributes(new { style = "text-align:center" });
+                        columns.Bound(p => p.ShopGroupDescription).Title("توضیحات").Width(200).HeaderHtmlAttributes(new { style = "text-align:center" }).HtmlAttributes(new { style = "text-align:center" });
+                        columns.Bound(p => p.ShopGroupShopCount).Title("تعداد غرفات").Width(80).HeaderHtmlAttributes(new { style = "text-align:center" }).HtmlAttributes(new { style = "text-align:center" });
+                        columns.Bound(p => p.ShopGroupId).Title("Id").Width(1).HeaderHtmlAttributes(new { style = "display:none" }).HtmlAttributes(new { style = "display:none", type = "ShopGroupId" });
+                    })
+                    .Pageable(pageable => pageable
+                                      .Refresh(true)
+                                      .PageSizes(true)
+                                      .ButtonCount(5))
+                    .Sortable()
+                    .Selectable(selectable => selectable.Mode(GridSelectionMode.Single))
+                    .PersistSelection(true)
+                    .Filterable(ftb => ftb.Mode(GridFilterMode.Menu))
+                    //.Events(events => events.DataBound("onDataBound"))
+                    .DataSource(dataSource => dataSource
+                        .Ajax()
+                        .PageSize(10)
+                        .ServerOperation(false)
+                        ).HtmlAttributes(new { style = "font-family:Vazir,Tahoma;font-size:12px" })
+                )
+        </div>
+
+    </div>
+
+
+</div>
+
+@section Scripts {
+
+
+
+    <script>
+        var ViewName = "ShopGroups";
+        $(document).ready(function (e) {
+
+
+
+
+
+            $("#Btn"+ViewName+"New").click(function (e) {
+                showWindow("تعریف گروه غرفات جدید", "Market/ShopGroupDefine", "0", true, "medium", refreshShopGroups);
+
+            });
+
+            $("#Btn"+ViewName+"Edit").click(function (e) {
+
+                var selectedItem = $("#GridShopGroup tr.k-state-selected")
+                var Id = 0;
+                if ($(selectedItem).length == 0) {
+
+                    showNotification("هشدار", "لطفا ابتدا یک گروه غرفات را انتخاب نمایید", "error");
+
+                }
+                else {
+                    Id = $(selectedItem).find("td[type=ShopGroupId]").html();
+                    showWindow("ویرایش گروه غرفات", "Market/ShopGroupDefine", Id, true, "medium", refreshShopGroups);
+                }
+
+
+
+            });
+
+
+             $("#Btn"+ViewName+"Delete").click(function (e) {
+
+                 var selectedItem = $("#GridShopGroup tr.k-state-selected")
+                if ($(selectedItem).length == 0) {
+
+                    showNotification("هشدار", "لطفا ابتدا یک گروه غرفات را انتخاب نمایید", "error");
+
+                }
+                else {
+
+                    showConfirm("حذف گروه غرفات", "آیا جهت حذف گروه غرفات انتخاب شده مطمئن هستید؟", deleteShopGroup);
+
+                }
+
+
+
+            });
+
+        });
+
+        function deleteShopGroup() {
+            var selectedItem = $("#GridShopGroup tr.k-state-selected");
+            var Id = $(selectedItem).find("td[type=ShopGroupId]").html();
+
+           $.ajax({
+                type: "POST",
+                url: "@Url.Action("DeleteShopGroup")",
+                data: {Id: Id},
+                dataType: "json",
+               success: function (data) {
+
+                   showNotification("حذف گروه غرفات", data.ResultMessage, data.ResultType);
+                   if (data.ResultType == "success") {
+                       refreshShopGroups();
+                   }
+                },
+               error: function (req, status, error) {
+                    showNotification("حذف گروه غرفات", error, "error");
+
+                }
+            });
+        }
+
+        $("#Btn" + ViewName + "Shops").click(function (e) {
+
+            var selectedItem = $("#GridShopGroup tr.k-state-selected")
+            var Id = 0;
+            var ShopGroupId = 0;
+            if ($(selectedItem).length == 0) {
+
+                ShopGroupId = 0;
+
+            }
+            else {
+                ShopGroupId = $(selectedItem).find("td[type=ShopGroupId]").html();
+
+
+            }
+
+            showWindow("غرفات", "Market/Shops", ShopGroupId, true, "medium", refreshShopGroups);
+
+
+        });
+
+
+        function refreshShopGroups() {
+
+            $("span#MarketShopGroups_BtnRefresh").click();
+            var tabStrip = $("#tabstrip").kendoTabStrip().data("kendoTabStrip");
+            tabStrip.reload("li[dialogName=MarketShopGroups]");
+
+        }
+
+
+
+    </script>
+}

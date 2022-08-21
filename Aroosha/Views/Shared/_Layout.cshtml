@@ -1,0 +1,227 @@
+﻿
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["SystemTitle"] - @ViewData["PageTitle"]</title>
+
+    <environment names="Development">
+        <link href="~/lib/kendo-ui/styles/kendo.rtl.min.css" rel="stylesheet" />
+        @*<link href="~/lib/bootstrap/dist/css/bootstrap-rtl.css" rel="stylesheet" />*@
+        @*<link href="~/lib/kendo-ui/styles/kendo.bootstrap-v4.min.css" rel="stylesheet" />*@
+        <link href="~/css/Urban-Aroosha.css" rel="stylesheet" />
+
+        <link href="~/css/General.css" rel="stylesheet" />
+    </environment>
+    <environment names="Staging,Production">
+        <link href="https://kendo.cdn.telerik.com/2020.3.915/styles/kendo.rtl.min.css" rel="stylesheet" type="text/css" />
+        @*<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+            asp-fallback-href="~/lib/bootstrap/dist/css/bootstrap-rtl.css"
+            asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute" />*@
+        @*<link href="~/lib/bootstrap/dist/css/bootstrap-rtl.css" rel="stylesheet" asp-append-version="true" />*@
+
+        @*<link href="https://kendo.cdn.telerik.com/2020.3.915/styles/kendo.bootstrap-v4.min.css" rel="stylesheet" type="text/css" />*@
+        <link href="~/css/Urban-Aroosha.css" rel="stylesheet" asp-append-version="true" />
+        <link rel="stylesheet" href="~/css/General.css" asp-append-version="true" />
+    </environment>
+
+
+
+    @RenderSection("HeadContent", required: false)
+
+    <script src="https://kendo.cdn.telerik.com/2020.3.915/js/jquery.min.js"></script>
+    <script src="https://kendo.cdn.telerik.com/2020.3.915/js/jszip.min.js"></script>
+    <script src="https://kendo.cdn.telerik.com/2020.3.915/js/kendo.all.min.js"></script>
+    <script src="https://kendo.cdn.telerik.com/2020.3.915/js/kendo.aspnetmvc.min.js"></script>
+    <script src="https://kendo.cdn.telerik.com/2020.3.915/js/cultures/kendo.culture.fa-IR.min.js"></script>
+    <script src="https://kendo.cdn.telerik.com/2020.3.915/js/messages/kendo.messages.fa-IR.min.js"></script>
+    <script>
+        kendo.culture("fa-IR");
+    </script>
+
+</head>
+<body class="k-rtl">
+
+    @RenderBody()
+    <span id="notification" style="display:none;"></span>
+    <div id="dialog"></div>
+
+    <environment names="Development">
+        <script src="~/lib/bootstrap/js/bootstrap.js"></script>
+
+        <script src="~/js/site.js" asp-append-version="true"></script>
+    </environment>
+    <environment names="Staging,Production">
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
+                asp-fallback-src="~/lib/bootstrap/js/bootstrap.min.js"
+                asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal"></script>
+
+        <script src="~/js/site.min.js" asp-append-version="true"></script>
+    </environment>
+    <script id="infoTemplate" type="text/x-kendo-template">
+        <div style="font-size:14px">
+            <span class="k-icon k-i-info"></span>
+            <h4>#= title #</h4>
+            <p>#= message #</p>
+        </div>
+    </script>
+
+    <script id="errorTemplate" type="text/x-kendo-template">
+        <div style="font-size:14px">
+            <span class="k-icon k-i-error"></span>
+            <h4>#= title #</h4>
+            <p>#= message #</p>
+        </div>
+    </script>
+
+    <script id="successTemplate" type="text/x-kendo-template">
+        <div style="font-size:14px">
+            <span class="k-icon k-i-success"></span>
+            <h4>#= title #</h4>
+            <p>#= message #</p>
+        </div>
+    </script>
+
+    <script>
+        var notification;
+        function onShow(e) {
+            if (e.sender.getNotifications().length == 1) {
+                var element = e.element.parent(),
+                    eWidth = element.width(),
+                    eHeight = element.height(),
+                    wWidth = $(window).width(),
+                    wHeight = $(window).height(),
+                    newTop, newLeft;
+
+                newLeft = Math.floor(wWidth / 2 - eWidth / 2);
+                newTop = Math.floor(wHeight / 2 - eHeight / 2);
+
+                e.element.parent().css({ top: newTop, left: newLeft });
+            }
+        }
+
+        function showConfirm(title, message,okCallback) {
+            kendo.confirm(message).then(function () {
+
+                $("button.k-button").eq(1).click();
+                okCallback();
+            }, function () { });
+            $("span.k-dialog-title").html(title);
+            //$("span.k-dialog-title").html(title).css("font-family","Tahoma");
+            //$("div.k-dialog-content").css("font-family", "Tahoma");
+        }
+
+        function showAlert(title, message) {
+            kendo.alert(message);
+            $("span.k-dialog-title").html(title);
+            //$("span.k-dialog-title").html(title).css("font-family","Tahoma");
+            //$("div.k-dialog-content").css("font-family", "Tahoma");
+
+        }
+
+
+
+        $(document).ready(function (e) {
+            $("span.k-floating-label-container").css("width", "100%");
+
+            notification = $("#notification").kendoNotification({
+                position: {
+                    pinned: true,
+                    top: 30,
+                    right: 30
+                },
+                show: onShow,
+                autoHideAfter: 3000,
+                stacking: "down",
+                templates: [{
+                    type: "info",
+                    template: $("#infoTemplate").html()
+                }, {
+                    type: "error",
+                    template: $("#errorTemplate").html()
+                }, {
+                    type: "success",
+                    template: $("#successTemplate").html()
+                }]
+
+            }).data("kendoNotification");
+
+
+
+        });
+
+        function showNotification(title, message, type) {
+            notification.show({
+                title: title,
+                message: message
+            }, type);
+        }
+
+        function showWindow(name, url, params, modal,dialogSize, callback) {
+            var dialogName = url.replace("/", "");
+
+            var topOffset = windowCount * 40 + 70;
+            var leftOffset = windowCount * 40 + 100;
+
+             var controllerName = "", actionName = "";
+
+            actionName = url.substring(url.indexOf("/") + 1, url.lenght)
+            controllerName = url.substring(0, url.indexOf("/"));
+
+            var sampleUrl ='@Url.Action("Login","Account")';
+
+            sampleUrl = sampleUrl.replace("Account", controllerName);
+            sampleUrl = sampleUrl.replace("Login", actionName);
+
+            //alert(url + "/" + params)
+            $("body").append("<div id='" + dialogName + "'><div>");
+            var window = $("#" + dialogName).kendoWindow({
+                content: {
+                    url: sampleUrl + "/" + params
+
+                },
+                title: name,
+                position: {
+                    top: topOffset,
+                    left: leftOffset
+                },
+                //width: 700,
+                //height: 400,
+                size: dialogSize,
+                actions: ["Refresh", "Minimize", "Maximize", "Close"],
+                animation: {
+                    open: {
+                        effects: "fade:in"
+                    },
+                    close: {
+                        effects: "fade:out"
+                    }
+                },
+                modal: modal,
+                close: function (e) {
+                    $("#" + dialogName).parent().remove();
+                    $(".k-overlay").remove();
+                    --windowCount;
+                    callback();
+                },
+                open: function (e) {
+
+                    //$("#" + dialogName + "_wnd_title").css("font-family", "Tahoma").css("font-size", "14px");
+                    $("#" + dialogName + "_wnd_title").css("font-size", "14px");
+                    closeDrawer();
+                    ++windowCount;
+                    $("#" + dialogName + "_wnd_title").next().find("a.k-window-action span.k-i-refresh").attr("id", dialogName + "_BtnRefresh");
+                    $("#" + dialogName + "_wnd_title").next().find("a.k-window-action span.k-i-close").attr("id", dialogName + "_BtnClose");
+
+
+                }
+
+            }).open();
+
+
+        }
+    </script>
+    @RenderSection("scripts", required: false)
+</body>
+</html>

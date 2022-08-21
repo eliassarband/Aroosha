@@ -1,0 +1,342 @@
+﻿@model Aroosha.Models.LoginedDataModel
+@using Aroosha.Controllers;
+@using Kendo.Mvc.UI.Fluent;
+@using System.Collections.Generic;
+
+
+
+@{
+    ViewBag.PageTitle = "صفحه اصلی";
+    Layout = "_HomeLayout";
+}
+
+@section HeadContent
+{
+    <style>
+
+
+        .sidenav {
+            height: 100%; /* 100% Full-height */
+            width: 250px; /* 0 width - change this with JavaScript */
+            position: fixed; /* Stay in place */
+            z-index: 1; /* Stay on top */
+            top: -50px; /* Stay at the top */
+            right: -250px;
+            background-color: #F8F9FA; /* Black*/
+            overflow-x: hidden; /* Disable horizontal scroll */
+            margin-top: 50px;
+            padding-top: 40px; /* Place content 60px from the top */
+            transition: 0.5s; /* 0.5 second transition effect to slide in the sidenav */
+        }
+
+
+
+            .sidenav a:hover {
+                color: #f1f1f1;
+            }
+
+            .sidenav .closebtn {
+                position: absolute;
+                top: 0px;
+                left: 5px;
+                font-size: 36px;
+                margin-right: 20px;
+                color: #818181;
+            }
+
+        #main {
+            transition: margin-left .5s;
+            padding-top: 0px;
+        }
+
+
+
+        @@media screen and (max-height: 450px) {
+            .sidenav {
+                padding-top: 15px;
+            }
+
+                .sidenav a {
+                    font-size: 18px;
+                }
+        }
+    </style>
+}
+
+<div id="mySidenav" class="sidenav">
+
+    <span style="font-family:Vazir,Tahoma">منوی اصلی</span>
+    <a href="javascript:void(0)" class="closebtn" onclick="closeNav()"></a>
+    <div class="k-content k-rtl">
+
+        @(
+            Html.Kendo().PanelBar()
+                .Name("panelbar-right")
+                .BindTo((IEnumerable<MenuCategoryItemModel>)ViewBag.PanelBarData, (NavigationBindingFactory<PanelBarItem> mappings) =>
+                {
+                    mappings.For<MenuCategoryItemModel>(binding => binding.ItemDataBound((item, category) =>
+                    {
+                        item.Text = category.Name;
+
+                    })
+                    .Children(category => category.MenuItems));
+
+                    mappings.For<MenuItemModel>(binding => binding.ItemDataBound((item, subCategory) =>
+                    {
+                        item.Text = subCategory.Name;
+                        item.Url = subCategory.ControllerName+"/"+subCategory.ActionName+"#"+subCategory.DialogSize;
+
+                    }));
+                }).HtmlAttributes(new {style = "font-family:Tahoma;font-size:14px" })
+        )
+    </div>
+</div>
+
+<div id="main">
+    <div id='tabstrip'></div>
+
+</div>
+
+@Html.HiddenFor(model => model.HomeTypeStrCode)
+@Html.HiddenFor(model => model.ForceFirstLoginChange)
+
+@section Scripts {
+    <script>
+        var windowCount = 0;
+
+        $(document).ready(function () {
+
+            
+
+            $("#show").click(function (e) {
+
+                if ($("#mySidenav").css("right") == "0px") {
+                    $(".closebtn").click();
+                }
+                else {
+                    openDrawer();
+
+                }
+
+            });
+
+            $(".closebtn").click(function (e) {
+                closeDrawer();
+
+            });
+
+            $(".k-link").click(function (e) {
+                e.preventDefault();
+                if ($(this).attr("href") != undefined) {
+
+                    showPage($(this).html(), $(this).attr("href"));
+
+                }
+
+            });
+
+            
+            //var tabStrip = $("#tabstrip").data("kendoTabStrip");
+
+            var tabStrip = $("#tabstrip").kendoTabStrip().data("kendoTabStrip");
+
+            $(document).click(function (e) {
+
+                if ($(e.target).hasClass("k-i-close")) {
+
+                    dialogName = $(e.target).attr("dialogName");
+
+                    $("#tabstrip").find("li.k-item[dialogName=" + dialogName + "]").remove();
+                    $("#tabstrip").find("div.k-content[dialogName=" + dialogName + "]").remove();
+
+
+                    if ($("#tabstrip").find("li.k-item").length > 0) {
+                        $("#tabstrip").find("li.k-item:last").click();
+                    }
+                }
+                else if ($(e.target).hasClass("k-i-reload")) {
+
+                    dialogName = $(e.target).attr("dialogName");
+
+                    var tabStrip = $("#tabstrip").data("kendoTabStrip");
+                    tabStrip.reload("li.k-item[dialogName="+dialogName+"]");
+
+                }
+                else if ($(e.target).hasClass("changePassword")) {
+
+                    showPage("تغییر کلمه عبور", "Security/ChangePassword#medium");
+
+                }
+                else if ($(e.target).hasClass("userSetting")) {
+
+                    showPage("تنظیمات کاربری", "Security/UserSetting#medium");
+
+                }
+
+            });
+            
+            if ($("#ForceFirstLoginChange").val() == "True") {
+                
+                showPage("تغییر کلمه عبور", "Security/ChangePassword#medium");
+                
+            }
+
+        });
+
+
+        function openDrawer() {
+
+
+            $("body").css("position", "absolute").css("left", "0px").css("right","0px").animate({ right: '250px' }, 500);
+            $("#mySidenav").animate({ right: '0px' }, 200);
+
+            //$("body").animate({ right: '250px' }, 500);
+            //$("body").css("background-color", "rgba(0,0,0,0.4)");
+        }
+
+        function closeDrawer() {
+
+            $("#mySidenav").animate({ right: '-250px' }, 200);
+            $("body").animate({ right: '0px' }, 500);
+
+            //$("body").css("background-color", "#ffffff");
+        }
+
+
+        function showPage(name, url) {
+
+            if ($("#HomeTypeStrCode").val() == "Window") {
+                showWindowPage(name, url);
+            }
+            else {
+
+                closeDrawer();
+
+                var dialogSize = url.substring(url.indexOf("#") + 1, url.lenght)
+
+                url = url.substring(0, url.indexOf("#"));
+
+                var controllerName = "", actionName = "";
+
+                actionName = url.substring(url.indexOf("/") + 1, url.lenght)
+                controllerName = url.substring(0, url.indexOf("/"));
+
+                var sampleUrl = '@Url.Action("Login","Account")';
+
+                sampleUrl = sampleUrl.replace("Account", controllerName);
+                sampleUrl = sampleUrl.replace("Login", actionName);
+
+                var dialogName = url.replace("/", "");
+
+                if ($("#tabstrip").find("li.k-item[dialogName=" + dialogName + "]").length > 0) {
+                    $("#tabstrip").find("li.k-item[dialogName=" + dialogName + "]").click();
+                }
+                else {
+
+                    var tabStrip = $("#tabstrip").data("kendoTabStrip");
+
+                    tabStrip.append(
+                        [{
+                            text: name + " <button data-type='reload' class='k-button k-button-icon' style='width:20px;height:20px;margin-right:5px'><span class='k-icon k-i-reload'></span></button><button data-type='remove' class='k-button k-button-icon' style='width:20px;height:20px;margin-right:5px'><span class='k-icon k-i-close'></span></button>",
+                            encoded: false,
+                            contentUrl: sampleUrl               // Link URL if navigation is needed, optional.
+                        }]
+                    );
+
+
+                    $("#tabstrip").find("li.k-item:last").attr("dialogName", dialogName);
+                    $("#tabstrip").find("div.k-content:last").attr("dialogName", dialogName);
+                    $("#tabstrip").find("span.k-i-close:last").attr("dialogName", dialogName);
+                    $("#tabstrip").find("span.k-i-reload:last").attr("dialogName", dialogName);
+
+
+                    tabStrip.select("li.k-item:last");
+                }
+
+            }
+        }
+
+        function showWindowPage(name, url) {
+
+
+            var dialogSize = url.substring(url.indexOf("#") + 1, url.lenght)
+
+            url = url.substring(0, url.indexOf("#"));
+
+            var controllerName = "", actionName = "";
+
+            actionName = url.substring(url.indexOf("/") + 1, url.lenght)
+            controllerName = url.substring(0, url.indexOf("/"));
+
+            var sampleUrl ='@Url.Action("Login","Account")';
+
+
+
+            sampleUrl = sampleUrl.replace("Account", controllerName);
+            sampleUrl = sampleUrl.replace("Login", actionName);
+
+
+            var dialogName = url.replace("/", "");
+
+            var topOffset = windowCount * 40 + 100;
+            var rleftOffset = windowCount * 40 + 20;
+
+            $("body").append("<div id='" + dialogName + "'><div>");
+
+
+
+
+            ////////////////////////////////////////////////////////////////////////////////
+            var window = $("#" + dialogName).kendoWindow({
+                content: {
+                    url: sampleUrl,
+                    dataType: "html"
+                },
+                title: name,
+                position: {
+                    top: topOffset,
+                    left:leftOffset
+                },
+                //width: 700,
+                //height: 400,
+                size: dialogSize,
+                actions: ["Refresh", "Minimize", "Maximize", "Close"],
+                animation: {
+                    open: {
+                        effects: "fade:in"
+                    },
+                    close: {
+                        effects: "fade:out"
+                    }
+                },
+                modal: false,
+                close: function (e) {
+                    $("#" + dialogName).parent().remove();
+                    $(".k-overlay").remove();
+                     --windowCount;
+                },
+                open: function (e) {
+
+                    e.preventDefault();
+
+                    $("#" + dialogName + "_wnd_title").css("font-family", "Tahoma").css("font-size", "14px");
+                    closeDrawer();
+                    ++windowCount;
+                    $("#" + dialogName + "_wnd_title").next().find("a.k-window-action span.k-i-refresh").attr("id", dialogName + "_BtnRefresh");
+                    $("#" + dialogName + "_wnd_title").next().find("a.k-window-action span.k-i-close").attr("id", dialogName + "_BtnClose");
+
+
+                }
+
+            }).open().center();
+
+
+
+
+        }
+
+
+
+
+    </script>
+}

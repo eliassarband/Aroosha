@@ -1,0 +1,444 @@
+﻿@model Aroosha.Models.CustomerDefineModel
+
+@{
+    Layout = "_ToolbarLayout";
+}
+
+@{
+    IEnumerable<JobGroupModel> JobGroupsComboData = ViewData["JobGroupsComboData"] as IEnumerable<JobGroupModel>;
+    IEnumerable<JobModel> JobsComboData = ViewData["JobsComboData"] as IEnumerable<JobModel>;
+    IEnumerable<CityForComboModel> CitiesComboData = ViewData["CitiesComboData"] as IEnumerable<CityForComboModel>;
+}
+
+
+
+
+<div class="container" style="font-family:Vazir,Tahoma;font-size:12px">
+    
+        @using (Html.BeginForm("CustomerDefine", "Market", FormMethod.Post, new { id = "FormCustomerDefine", @class = "form" }))
+        {
+
+    <div class="row">
+        <div class="col-4 col-justify-content-right">
+            @(Html.Kendo().IntegerTextBoxFor(model => model.CustomerDefineCode)
+                        .Placeholder("کد مشتری")
+                        .Label(label => label
+                            .Content("کد مشتری")
+                            .Floating(true)
+                        )
+                        .Min(0)
+                        .Format("n0")
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+
+                    )
+        </div>
+        <div class="col-4 col-justify-content-right">
+            @(Html.Kendo().TextBoxFor(model => model.CustomerDefineFirstName)
+                        .Placeholder("نام مشتری")
+                        .Label(label => label
+                            .Content("نام مشتری")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+
+                    )
+        </div>
+        <div class="col-4 col-justify-content-right">
+            @(Html.Kendo().TextBoxFor(model => model.CustomerDefineLastName)
+                        .Placeholder("نام خانوادگی مشتری")
+                        .Label(label => label
+                            .Content("نام خانوادگی مشتری")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+
+                    )
+        </div>
+        <div class="col-4 col-justify-content-right">
+            @(Html.Kendo().MaskedTextBoxFor(model => model.CustomerDefineNationalCode)
+                        .Label(label => label
+                            .Content("کد ملی")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+                        .Mask("##########")
+                    )
+        </div>
+        <div class="col-4 col-justify-content-right">
+            @(Html.Kendo().NumericTextBoxFor(model => model.CustomerDefineIdentityNumber)
+                        .Placeholder("شماره شناسنامه")
+                        .Label(label => label
+                            .Content("شماره شناسنامه")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+                        .Min(0)
+                        .Format("n0")
+                    )
+        </div>
+        <div class="col-4 col-justify-content-right">
+            @(Html.Kendo().TextBoxFor(model => model.CustomerDefineFatherName)
+                        .Placeholder("نام پدر")
+                        .Label(label => label
+                            .Content("نام پدر")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+
+                    )
+        </div>
+        <div class="col-4 col-justify-content-right">
+            <label class="k-label k-checkbox-label" for="Gender">جنسیت</label>
+            @(Html.Kendo().SwitchFor(model => model.CustomerDefineGender)
+                            .Name("Gender")
+                            .Messages(c => c.Checked("آقا").Unchecked("خانم"))
+                )
+
+        </div>
+        <div class="col-4 col-justify-content-right">
+            @(Html.Kendo().TextBoxFor(model => model.CustomerDefineWorkAddress)
+                        .Placeholder("آدرس محل کار")
+                        .Label(label => label
+                            .Content("آدرس محل کار")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+
+                    )
+        </div>
+        <div class="col-4 col-justify-content-right">
+            @(Html.Kendo().MaskedTextBoxFor(model => model.CustomerDefineWorkPhone)
+                        .Label(label => label
+                            .Content("تلفن محل کار")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+                        .Mask("0##########")
+                    )
+        </div>
+        <div class="col-4 col-justify-content-right">
+            @(Html.Kendo().MaskedTextBoxFor(model => model.CustomerDefineMobileNumber)
+                        .Label(label => label
+                            .Content("شماره موبایل")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+                        .Mask("0##########")
+                    )
+        </div>
+        <div class="col-4 col-justify-content-right">
+            @(Html.Kendo().TextBoxFor(model => model.CustomerDefineHomeAddress)
+                        .Placeholder("آدرس منزل")
+                        .Label(label => label
+                            .Content("آدرس منزل")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+
+                    )
+        </div>
+        <div class="col-4 col-justify-content-right">
+            @(Html.Kendo().MaskedTextBoxFor(model => model.CustomerDefineHomePhone)
+                        .Label(label => label
+                            .Content("تلفن منزل")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+                        .Mask("0##########")
+                    )
+        </div>
+        <div class="col-4 col-justify-content-right">
+            @(Html.Kendo().IntegerTextBoxFor(model => model.CustomerDefineBirthYear)
+                        .Placeholder("سال تولد")
+                        .Label(label => label
+                            .Content("سال تولد")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+                        .Min(1250)
+                        .Max(1500)
+                        .Format("n0")
+                    )
+        </div>
+        <div class="col-4 col-justify-content-right">
+            <span data-role="floatinglabel" class="k-floating-label-container k-state-focused" style="width: 90%;">
+                <label class="k-label k-input-label" for="CustomerDefineBirthCityId">شهر محل تولد</label>
+                <span class="k-widget k-numerictextbox" style="width: 100%; font-family: Vazir, Tahoma; font-size: 12px;">
+                    <span class="k-numeric-wrap k-state-default">
+                        @(Html.Kendo().ComboBoxFor(model => model.CustomerDefineBirthCityId)
+                          .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+                          .Placeholder("شهر محل تولد")
+                          //.DataTextField("Name")
+                          //.DataValueField("Id")
+                          .Filter(FilterType.Contains)
+                          .AutoBind(true)
+                          .Items(items =>
+                          {
+                              foreach (var item in CitiesComboData)
+                              {
+
+                                  items.Add()
+                                  .Text(item.CityFullName)
+                                  .Value(item.Id.ToString());
+
+                              }
+                          })
+                    )
+                    </span>
+                </span>
+            </span>
+        </div>
+        <div class="col-4 col-justify-content-right">
+            <span data-role="floatinglabel" class="k-floating-label-container k-state-focused" style="width: 90%;">
+                <label class="k-label k-input-label" for="CustomerDefineIssuanceCityId">شهر محل صدور</label>
+                <span class="k-widget k-numerictextbox" style="width: 100%; font-family: Vazir, Tahoma; font-size: 12px;">
+                    <span class="k-numeric-wrap k-state-default">
+                        @(Html.Kendo().ComboBoxFor(model => model.CustomerDefineIssuanceCityId)
+                          .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+                          .Placeholder("شهر محل صدور")
+                          //.DataTextField("Name")
+                          //.DataValueField("Id")
+                          .Filter(FilterType.Contains)
+                          .AutoBind(true)
+                          .Items(items =>
+                          {
+                              foreach (var item in CitiesComboData)
+                              {
+
+                                  items.Add()
+                                  .Text(item.CityFullName)
+                                  .Value(item.Id.ToString());
+
+                              }
+                          })
+                    )
+                    </span>
+                </span>
+            </span>
+        </div>
+        <div class="col-8 col-justify-content-right">
+            <span data-role="floatinglabel" class="k-floating-label-container k-state-focused" style="width: 90%;">
+                <label class="k-label k-input-label" for="CustomerDefineJobId">گروه شغلی و شغل</label>
+                <span class="k-widget k-numerictextbox" style="width: 100%; font-family: Vazir, Tahoma; font-size: 12px;">
+                    <span class="k-numeric-wrap k-state-default">
+                        @(Html.Kendo().ComboBoxFor(model => model.CustomerDefineJobId)
+                          .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+                          .Placeholder("گروه شغلی و شغل")
+                          //.DataTextField("Name")
+                          //.DataValueField("Id")
+                          .Filter(FilterType.Contains)
+                          .AutoBind(true)
+                          .Items(items =>
+                          {
+                              foreach (var item in JobsComboData)
+                              {
+
+                                  items.Add()
+                                  .Text(item.JobFullName)
+                                  .Value(item.JobId.ToString());
+                                    
+                              }
+                          })
+                    )
+                    </span>
+                </span>
+            </span>
+        </div>
+        <div class="col-4 col-justify-content-right">
+
+            @(Html.Kendo().IntegerTextBoxFor(model => model.CustomerDefineDebtCeiling)
+                        .Placeholder("حداقل شارژ")
+                        .Enable(false)
+                        .Label(label => label
+                            .Content("حداقل شارژ")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+
+                    )
+
+        </div>
+        <div class="col-8 col-justify-content-right">
+            @(Html.Kendo().TextBoxFor(model => model.CustomerDefineDescription)
+                        .Placeholder("توضیحات")
+                        .Label(label => label
+                            .Content("توضیحات")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+
+                    )
+        </div>
+        <div class="col-4 col-justify-content-right">
+
+            @(Html.Kendo().IntegerTextBoxFor(model => model.CustomerDefineBalance)
+                        .Placeholder("مانده اعتبار")
+                        .Enable(false)
+                        .Label(label => label
+                            .Content("مانده اعتبار")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+
+                    )
+
+        </div>
+
+    </div>
+            @Html.HiddenFor(model => model.CustomerDefineId)
+            
+        }
+
+
+   </div>
+
+            @section Scripts {
+
+
+
+                <script>
+        var ViewName = "CustomerDefine";
+        $(document).ready(function (e) {
+
+            $("span.k-floating-label-container").css("width", "100%");
+
+
+            $("#Btn" + ViewName + "Save").click(function (e) {
+
+                Save("close");
+
+            });
+
+            $("#Btn" + ViewName + "SaveAndContinue").click(function (e) {
+
+                Save("continue");
+
+            });
+
+
+            $("#Btn" + ViewName + "SaveAndNew").click(function (e) {
+
+                Save("new");
+
+            });
+
+            $("#Btn" + ViewName + "CustomerCards").click(function (e) {
+
+                var Id = 0;
+
+                var selectedItem = $("#GridCustomer tr.k-state-selected")
+
+                if ($(selectedItem).length == 0) {
+
+                    showNotification("هشدار", "لطفا ابتدا مشتری را ثبت نمایید", "error");
+
+                }
+                else {
+                    Id = $("#CustomerDefineId").val();
+                    
+
+                    showWindow("کارت عضویت", "Market/CustomerCards", Id, true, "medium", refreshCustomerDefine);
+                }
+
+            });
+
+            $("#Btn" + ViewName + "Credits").click(function (e) {
+
+                var Id = 0;
+
+                var selectedItem = $("#GridCustomer tr.k-state-selected")
+
+                if ($(selectedItem).length == 0) {
+
+                    showNotification("هشدار", "لطفا ابتدا مشتری را ثبت نمایید", "error");
+
+                }
+                else {
+                    Id = $("#CustomerDefineId").val();
+
+
+                    showWindow("شارژهای اعتبار", "Market/Credits", Id, true, "large", refreshCustomerDefine);
+                }
+
+            });
+
+            $("#Btn" + ViewName + "NewRent").click(function (e) {
+
+                var Id = 0;
+                var CustomerId = 0;
+
+                var selectedItem = $("#GridCustomer tr.k-state-selected")
+
+                if ($(selectedItem).length == 0) {
+
+                    showNotification("هشدار", "لطفا ابتدا مشتری را ثبت نمایید", "error");
+
+                }
+                else {
+                    CustomerId = $("#CustomerDefineId").val();
+
+
+                    showWindow("ثبت اجاره", "Market/RentDefine", Id+"/"+CustomerId, true, "large", refreshCustomerDefine);
+                }
+
+            });
+
+
+        });
+
+
+
+        function Save(action) {
+
+
+            var valdata = $("#FormCustomerDefine").serialize();
+
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("SaveCustomer")",
+                data: valdata,
+                dataType: "json",
+                success: function (data) {
+
+                    showNotification("ذخیره مشتری", data.ResultMessage, data.ResultType);
+                    Id = data.Id;
+                    if (data.ResultType == "success") {
+
+                        if (action == "new") {
+                            $("span#MarketCustomerDefine_BtnClose").click();
+                            Id = 0;
+                            showWindow("تعریف مشتری جدید", "Market/CustomerDefine", Id, true, "medium", refreshCustomerDefine);
+                        }
+                        else if (action == "continue") {
+                            $("span#MarketShopDefine_BtnClose").click();
+
+                            showWindow("تعریف مشتری جدید", "Market/CustomerDefine", Id, true, "medium", refreshCustomerDefine);
+                        }
+                        else {
+                            $("span#MarketCustomerDefine_BtnClose").click();
+                        }
+                    }
+                },
+                error: function (req, status, error) {
+                    showNotification("ذخیره مشتری", error, "error");
+
+                }
+            });
+
+        }
+
+
+        function refreshCustomerDefine() {
+
+            $("span#MarketCustomerDefine_BtnRefresh").click();
+            var tabStrip = $("#tabstrip").kendoTabStrip().data("kendoTabStrip");
+            tabStrip.reload("li[dialogName=MarketCustomerDefine]");
+
+        }
+
+
+
+                </script>
+            }
+
+

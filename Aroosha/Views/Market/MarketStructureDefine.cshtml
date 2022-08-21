@@ -1,0 +1,195 @@
+﻿@model Aroosha.Models.MarketStructureDefineModel
+
+@{
+    Layout = "_ToolbarLayout";
+}
+
+<div class="container" style="font-family:Vazir,Tahoma;font-size:12px">
+    
+        @using (Html.BeginForm("MarketStructureDefine", "Market", FormMethod.Post, new { id = "FormMarketStructureDefine", @class = "form" }))
+        {
+
+        <div class="row">
+
+            <div class="col-4 col-justify-content-right">
+                @(Html.Kendo().TextBoxFor(model => model.MarketName)
+                        .Placeholder("بازار")
+                        .Readonly(true)
+                        .Label(label => label
+                            .Content("بازار")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+
+                    )
+            </div>
+            <div class="col-4 col-justify-content-right">
+                @(Html.Kendo().TextBoxFor(model => model.MarketStructureDefineParentName)
+                        .Placeholder("ساختار مافوق")
+                        .Readonly(true)
+                        .Label(label => label
+                            .Content("ساختار مافوق")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+
+                    )
+            </div>
+            <div class="col-4 col-justify-content-right">
+                @(Html.Kendo().TextBoxFor(model => model.MarketStructureDefineTypeName)
+                        .Placeholder("نوع ساختار")
+                        .Readonly(true)
+                        .Label(label => label
+                            .Content("نوع ساختار")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+
+                    )
+            </div>
+            <div class="col-6 col-justify-content-right">
+                @(Html.Kendo().NumericTextBoxFor(model => model.MarketStructureDefineCode)
+                        .Placeholder("کد ساختار")
+                        .Label(label => label
+                            .Content("کد ساختار")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+                        .Min(0)
+                        .Format("n0")
+                    )
+            </div>
+            <div class="col-6 col-justify-content-right">
+                @(Html.Kendo().TextBoxFor(model => model.MarketStructureDefineName)
+                        .Placeholder("نام ساختار")
+                        .Label(label => label
+                            .Content("نام ساختار")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+
+                    )
+            </div>
+            <div class="col-12 col-justify-content-right">
+                @(Html.Kendo().TextBoxFor(model => model.MarketStructureDefineDescription)
+                        .Placeholder("توضیحات")
+                        .Label(label => label
+                            .Content("توضیحات")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+
+                    )
+            </div>
+            <div class="col-12 col-justify-content-right">
+                @(Html.Kendo().TextBoxFor(model => model.MarketStructureDefineAddress)
+                        .Placeholder("آدرس ساختار")
+                        .Readonly(true)
+                        .Label(label => label
+                            .Content("آدرس ساختار")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+
+                    )
+            </div>
+        </div>
+            @Html.HiddenFor(model => model.MarketStructureDefineId)
+            @Html.HiddenFor(model => model.MarketStructureDefineTypeId)
+            @Html.HiddenFor(model => model.MarketStructureDefineParentId)
+            @Html.HiddenFor(model => model.MarketId)
+           
+        }
+
+
+    
+
+
+            </div>
+
+
+            @section Scripts {
+
+
+
+                <script>
+        var ViewName = "MarketStructureDefine";
+        $(document).ready(function (e) {
+
+            $("span.k-floating-label-container").css("width", "100%");
+
+            $("#Btn" + ViewName + "Save").click(function (e) {
+
+                Save("close");
+
+            });
+
+            $("#Btn" + ViewName + "SaveAndContinue").click(function (e) {
+
+                Save("continue");
+
+            });
+
+
+            $("#Btn" + ViewName + "SaveAndNew").click(function (e) {
+
+                Save("new");
+
+            });
+
+
+        });
+
+
+
+        function Save(action) {
+
+
+            var valdata = $("#FormMarketStructureDefine").serialize();
+
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("SaveMarketStructure")",
+                data: valdata,
+                dataType: "json",
+                success: function (data) {
+
+                    showNotification("ذخیره ساختار", data.ResultMessage, data.ResultType);
+                    Id = data.Id;
+                    if (data.ResultType == "success") {
+                        if (action == "new") {
+                            $("span#MarketMarketStructureDefine_BtnClose").click();
+                            Id = 0;
+                            showWindow("تعریف ساختار جدید", "General/MarketStructureDefine", Id + "/0/0", true, "medium", refreshMarketStructureDefine);
+                        }
+                        else if (action == "continue") {
+                            $("span#MarketMarketStructureDefine_BtnClose").click();
+
+                            showWindow("تعریف ساختار جدید", "General/MarketStructureDefine", Id + "/0/0", true, "medium", refreshMarketStructureDefine);
+                        }
+                        else {
+                            $("span#MarketMarketStructureDefine_BtnClose").click();
+                        }
+                    }
+                },
+                error: function (req, status, error) {
+                    showNotification("ذخیره ساختار", error, "error");
+
+                }
+            });
+
+        }
+
+
+        function refreshMarketStructureDefine() {
+
+            $("span#GeneralMarketStructureDefine_BtnRefresh").click();
+            var tabStrip = $("#tabstrip").kendoTabStrip().data("kendoTabStrip");
+            tabStrip.reload("li[dialogName=GeneralMarketStructureDefine]");
+
+        }
+
+
+
+                </script>
+            }

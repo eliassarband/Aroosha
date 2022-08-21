@@ -1,0 +1,152 @@
+﻿@model IEnumerable<Aroosha.Models.CreditModel>
+
+@{
+    Layout = "_ToolbarLayout";
+}
+
+<div id="container">
+
+
+    <div class="row">
+        <div class="col-12">
+            @(Html.Kendo().Grid(Model)
+                    .Name("GridCredit")
+                    .Columns(columns =>
+                    {
+
+                        columns.Bound(p => p.CreditCustomerName).Title("نام  مشتری").Width(200).HeaderHtmlAttributes(new { style = "text-align:center" }).HtmlAttributes(new { style = "text-align:center" });
+                        columns.Bound(p => p.CreditDate).Title("تاریخ").Width(100).HeaderHtmlAttributes(new { style = "text-align:center" }).HtmlAttributes(new { style = "text-align:center" });
+                        columns.Bound(p => p.CreditPaymentTypeName).Title(" نوع پرداخت").Width(100).HeaderHtmlAttributes(new { style = "text-align:center" }).HtmlAttributes(new { style = "text-align:center" });
+                        columns.Bound(p => p.CreditAmount).Title("مبلغ شارژ").Width(150).HeaderHtmlAttributes(new { style = "text-align:center" }).HtmlAttributes(new { style = "text-align:center" });
+                        columns.Bound(p => p.CreditType).Title("افزاینده/کاهنده").Width(100).HeaderHtmlAttributes(new { style = "text-align:center" }).HtmlAttributes(new { style = "text-align:center" }).ClientTemplate("<span id='badge_#=CreditId#' class='badgeActiveStatus_#=CreditType#'></span>");
+                        columns.Bound(p => p.CreditReceiptNumber).Title("شماره فیش پرداخت").Width(100).HeaderHtmlAttributes(new { style = "text-align:center" }).HtmlAttributes(new { style = "text-align:center" });
+                        columns.Bound(p => p.CreditId).Title("Id").Width(1).HeaderHtmlAttributes(new { style = "display:none" }).HtmlAttributes(new { style = "display:none", type = "CreditId" });
+                        columns.Bound(p => p.CreditCustomerId).Title("CustomerId").Width(1).HeaderHtmlAttributes(new { style = "display:none" }).HtmlAttributes(new { style = "display:none", type = "CustomerId" });
+                        columns.Bound(p => p.CreditPaymentTypeId).Title("PaymentTypeId").Width(1).HeaderHtmlAttributes(new { style = "display:none" }).HtmlAttributes(new { style = "display:none", type = "PaymentTypeId" });
+                    })
+                    .Pageable(pageable => pageable
+                                      .Refresh(true)
+                                      .PageSizes(true)
+                                      .ButtonCount(5))
+                    .Sortable()
+                    .Selectable(selectable => selectable.Mode(GridSelectionMode.Single))
+                    .PersistSelection(true)
+                    .Filterable(ftb => ftb.Mode(GridFilterMode.Menu))
+                    //.Events(events => events.DataBound("onDataBound"))
+                    .DataSource(dataSource => dataSource
+                        .Ajax()
+                        .PageSize(10)
+                        .ServerOperation(false)
+                        ).HtmlAttributes(new { style = "font-family:Vazir,Tahoma;font-size:12px" })
+                )
+        </div>
+
+    </div>
+
+
+</div>
+
+@section Scripts {
+
+
+
+    <script>
+        var ViewName = "Credits";
+        $(document).ready(function (e) {
+
+            $(".badgeActiveStatus_true").kendoBadge({
+                themeColor: 'success',
+                text: 'افزایش',
+            });
+
+            $(".badgeActiveStatus_false").kendoBadge({
+                themeColor: 'error',
+                text: 'کاهش',
+            });
+
+            $("#Btn" + ViewName + "New").click(function (e) {
+                var CustomerId = 0;
+                showWindow("تعریف شارژ جدید", "Market/CreditDefine", "0/"+CustomerId, true, "medium", refreshCredits);
+
+            });
+
+            $("#Btn"+ViewName+"Edit").click(function (e) {
+                var CustomerId = 0;
+                var Id = 0;
+
+                var selectedItem = $("#GridCredit tr.k-state-selected")
+
+                if ($(selectedItem).length == 0) {
+
+                    showNotification("هشدار", "لطفا ابتدا یک شارژ را انتخاب نمایید", "error");
+
+                }
+                else {
+                    Id = $(selectedItem).find("td[type=CreditId]").html();
+
+
+                    showWindow("ویرایش  شارژ", "Market/CreditDefine", Id+"/"+CustomerId, true, "medium", refreshCredits);
+                }
+
+
+
+            });
+
+
+             $("#Btn"+ViewName+"Delete").click(function (e) {
+
+                 var selectedItem = $("#GridCredit tr.k-state-selected")
+                if ($(selectedItem).length == 0) {
+
+                    showNotification("هشدار", "لطفا ابتدا یک شارژ را انتخاب نمایید", "error");
+
+                }
+                else {
+
+                    showConfirm("حذف  شغل", "آیا جهت حذف شارژ انتخاب شده مطمئن هستید؟", deleteCredit);
+
+                }
+
+
+
+            });
+
+        });
+
+        function deleteCredit() {
+            var selectedItem = $("#GridCredit tr.k-state-selected");
+            var Id = $(selectedItem).find("td[type=CreditId]").html();
+
+           $.ajax({
+                type: "POST",
+                url: "@Url.Action("DeleteCredit")",
+                data: {Id: Id},
+                dataType: "json",
+               success: function (data) {
+
+                   showNotification("حذف شارژ", data.ResultMessage, data.ResultType);
+                   if (data.ResultType == "success") {
+                       refreshCredits();
+                   }
+                },
+               error: function (req, status, error) {
+                    showNotification("حذف شارژ", error, "error");
+
+                }
+            });
+        }
+
+
+
+
+        function refreshCredits() {
+
+            $("span#MarketCredits_BtnRefresh").click();
+            var tabStrip = $("#tabstrip").kendoTabStrip().data("kendoTabStrip");
+            tabStrip.reload("li[dialogName=MarketCredits]");
+        }
+
+
+
+    </script>
+}

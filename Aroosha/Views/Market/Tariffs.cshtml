@@ -1,0 +1,143 @@
+﻿@model IEnumerable<Aroosha.Models.TariffModel>
+
+@{
+    Layout = "_ToolbarLayout";
+}
+
+<div id="container">
+
+
+    <div class="row">
+        <div class="col-12">
+            @(Html.Kendo().Grid(Model)
+                    .Name("GridTariff")
+                    .Columns(columns =>
+                    {
+
+                        columns.Bound(p => p.TariffName).Title("نام تعرفه").Width(100).HeaderHtmlAttributes(new { style = "text-align:center" }).HtmlAttributes(new { style = "text-align:center" });
+                        columns.Bound(p => p.TariffPriority).Title("اولویت").Width(50).HeaderHtmlAttributes(new { style = "text-align:center" }).HtmlAttributes(new { style = "text-align:center" });
+                        columns.Bound(p => p.TariffFormula).Title("فرمول").Width(200).HeaderHtmlAttributes(new { style = "text-align:center" }).HtmlAttributes(new { style = "text-align:center" });
+                        columns.Bound(p => p.TariffStartDate).Title("تاریخ شروع").Width(70).HeaderHtmlAttributes(new { style = "text-align:center" }).HtmlAttributes(new { style = "text-align:center" });
+                        columns.Bound(p => p.TariffEndDate).Title(" تاریخ پایان").Width(70).HeaderHtmlAttributes(new { style = "text-align:center" }).HtmlAttributes(new { style = "text-align:center" });
+                        columns.Bound(p => p.TariffRentAmount).Title("مبلغ اجاره").Width(100).HeaderHtmlAttributes(new { style = "text-align:center" }).HtmlAttributes(new { style = "text-align:center" });
+                        columns.Bound(p => p.TariffReserveAmount).Title("مبلغ رزرو").Width(100).HeaderHtmlAttributes(new { style = "text-align:center" }).HtmlAttributes(new { style = "text-align:center" });
+                        columns.Bound(p => p.TariffId).Title("Id").Width(1).HeaderHtmlAttributes(new { style = "display:none" }).HtmlAttributes(new { style = "display:none", type = "TariffId" });
+
+                    })
+                    .Pageable(pageable => pageable
+                                      .Refresh(true)
+                                      .PageSizes(true)
+                                      .ButtonCount(5))
+                    .Sortable()
+                    .Selectable(selectable => selectable.Mode(GridSelectionMode.Single))
+                    .PersistSelection(true)
+                    .Filterable(ftb => ftb.Mode(GridFilterMode.Menu))
+                    //.Events(events => events.DataBound("onDataBound"))
+                    .DataSource(dataSource => dataSource
+                        .Ajax()
+                        .PageSize(10)
+                        .ServerOperation(false)
+                        ).HtmlAttributes(new { style = "font-family:Tahoma;font-size:12px" })
+                )
+        </div>
+
+    </div>
+
+
+</div>
+
+@section Scripts {
+
+
+
+    <script>
+        var ViewName = "Tariffs";
+        $(document).ready(function (e) {
+
+
+            $("#Btn" + ViewName + "New").click(function (e) {
+
+                showWindow("تعریف تعرفه جدید", "Market/TariffDefine", "0", true, "medium", refreshTariffs);
+
+            });
+
+            $("#Btn"+ViewName+"Edit").click(function (e) {
+
+                var Id = 0;
+
+                var selectedItem = $("#GridTariff tr.k-state-selected")
+
+                if ($(selectedItem).length == 0) {
+
+                    showNotification("هشدار", "لطفا ابتدا یک تعرفه را انتخاب نمایید", "error");
+
+                }
+                else {
+                    Id = $(selectedItem).find("td[type=TariffId]").html();
+
+
+                    showWindow("ویرایش  تعرفه", "Market/TariffDefine", Id, true, "medium", refreshTariffs);
+                }
+
+
+
+            });
+
+
+             $("#Btn"+ViewName+"Delete").click(function (e) {
+
+                 var selectedItem = $("#GridTariff tr.k-state-selected")
+                if ($(selectedItem).length == 0) {
+
+                    showNotification("هشدار", "لطفا ابتدا یک تعرفه را انتخاب نمایید", "error");
+
+                }
+                else {
+
+                    showConfirm("حذف  تعرفه", "آیا جهت حذف تعرفه انتخاب شده مطمئن هستید؟", deleteTariff);
+
+                }
+
+
+
+            });
+
+        });
+
+        function deleteTariff() {
+            var selectedItem = $("#GridTariff tr.k-state-selected");
+            var Id = $(selectedItem).find("td[type=TariffId]").html();
+
+           $.ajax({
+                type: "POST",
+                url: "@Url.Action("DeleteTariff")",
+                data: {Id: Id},
+                dataType: "json",
+               success: function (data) {
+
+                   showNotification("حذف تعرفه", data.ResultMessage, data.ResultType);
+                   if (data.ResultType == "success") {
+                       refreshTariffs();
+                   }
+                },
+               error: function (req, status, error) {
+                    showNotification("حذف تعرفه", error, "error");
+
+                }
+            });
+        }
+
+
+
+
+        function refreshTariffs() {
+
+            $("span#MarketTariffs_BtnRefresh").click();
+            var tabStrip = $("#tabstrip").kendoTabStrip().data("kendoTabStrip");
+            tabStrip.reload("li[dialogName=MarketTariffs]");
+        }
+
+
+
+    </script>
+}

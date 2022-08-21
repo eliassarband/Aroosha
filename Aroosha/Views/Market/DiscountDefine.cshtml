@@ -1,0 +1,186 @@
+﻿@model Aroosha.Models.DiscountDefineModel
+
+@{
+    Layout = "_ToolbarLayout";
+}
+
+
+<div class="container" style="font-family:Vazir,Tahoma;font-size:12px">
+
+
+    @using (Html.BeginForm("DiscountDefone", "Market", FormMethod.Post, new { id = "FormDiscountDefine", @class = "form" }))
+    {
+        <div class="row">
+            <div class="col-6 col-justify-content-right">
+                @(Html.Kendo().NumericTextBoxFor(model => model.DiscountDefineCode)
+                        .Placeholder("کد تخفیف")
+                        .Label(label => label
+                            .Content("کد تخفیف")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+                        .Min(0)
+                        .Format("n0")
+                    )
+            </div>
+            <div class="col-6 col-justify-content-right">
+                @(Html.Kendo().TextBoxFor(model => model.DiscountDefineName)
+                        .Placeholder("عنوان تخفیف")
+                        .Label(label => label
+                            .Content("عنوان تخفیف")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+
+                    )
+            </div>
+            <div class="col-6 col-justify-content-right">
+                @(Html.Kendo().IntegerTextBoxFor(model => model.DiscountDefineDefaultPercent)
+                        .Placeholder("درصد تخفیف")
+                        .Label(label => label
+                            .Content("درصد تخفیف")
+                            .Floating(true)
+                        )
+                        .Min(0)
+                        .Max(100)
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+
+                    )
+            </div>
+            <div class="col-6 col-justify-content-right">
+                @(Html.Kendo().IntegerTextBoxFor(model => model.DiscountDefineDefaultPrice)
+                        .Placeholder("مبلغ تخفیف")
+                        .Label(label => label
+                            .Content("مبلغ تخفیف")
+                            .Floating(true)
+                        )
+                        .Min(0)
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+
+                    )
+            </div>
+            <div class="col-6 col-justify-content-right">
+                @(Html.Kendo().MaskedTextBoxFor(model => model.DiscountDefineStartDate)
+                        .Label(label => label
+                            .Content("تاریخ شروع")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+                        .Mask("####/##/##")
+                    )
+            </div>
+            <div class="col-6 col-justify-content-right">
+                @(Html.Kendo().MaskedTextBoxFor(model => model.DiscountDefineEndDate)
+                        .Label(label => label
+                            .Content("تاریخ پایان")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+                        .Mask("####/##/##")
+                    )
+            </div>
+            <div class="col-6 col-justify-content-right">
+                <label class="k-label k-checkbox-label" for="DiscountDefineActive">وضعیت تخفیف</label>
+                @(Html.Kendo().SwitchFor(model => model.DiscountDefineActive)
+                            .Name("DiscountDefineActive")
+                            .Messages(c => c.Checked("فعال").Unchecked("غیرفعال"))
+                )
+            </div>
+
+        </div>
+        @Html.HiddenFor(model => model.DiscountDefineId)
+        
+
+
+    }
+
+
+
+
+
+</div>
+
+
+@section Scripts {
+
+    <script>
+        var Id = 0;
+        var ViewName = "DiscountDefine";
+        $(document).ready(function (e) {
+
+            $("span.k-floating-label-container").css("width", "100%");
+
+
+
+            $("#Btn"+ViewName+"Save").click(function (e) {
+
+                Save("close");
+
+            });
+
+            $("#Btn"+ViewName+"SaveAndContinue").click(function (e) {
+
+                Save("continue");
+
+            });
+
+
+            $("#Btn"+ViewName+"SaveAndNew").click(function (e) {
+
+                Save("new");
+
+            });
+
+        });
+
+        
+        function Save(action) {
+
+
+            var valdata = $("#FormDiscountDefine").serialize();
+
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("SaveDiscount")",
+                data: valdata,
+                dataType: "json",
+                success: function (data) {
+
+                    showNotification("ذخیره تخفیف", data.ResultMessage, data.ResultType);
+                    Id = data.Id;
+                    if (data.ResultType == "success") {
+                        if (action == "new") {
+                            $("span#MarketDiscountDefine_BtnClose").click();
+                            Id = 0;
+                            showWindow("تعریف تخفیف جدید", "Market/DiscountDefine", Id, true, "medium", refreshDiscountDefine);
+                        }
+                        else if (action == "continue") {
+                            $("span#MarketDiscountDefine_BtnClose").click();
+
+                            showWindow("تعریف تخفیف جدید", "Market/DiscountDefine", Id, true, "medium", refreshDiscountDefine);
+                        }
+                        else {
+                            $("span#MarketDiscountDefine_BtnClose").click();
+                        }
+                    }
+                },
+                error: function (req, status, error) {
+                    showNotification("ذخیره تخفیف", error, "error");
+
+                }
+            });
+
+        }
+
+        function refreshDiscountDefine() {
+
+            $("span#MarketDiscountDefine_BtnRefresh").click();
+            var tabStrip = $("#tabstrip").kendoTabStrip().data("kendoTabStrip");
+            tabStrip.reload("li[dialogName=MarketDiscountDefine]");
+
+        }
+
+
+    </script>
+}
+

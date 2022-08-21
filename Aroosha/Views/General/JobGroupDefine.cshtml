@@ -1,0 +1,182 @@
+﻿@model Aroosha.Models.JobGroupDefineModel
+
+@{
+    Layout = "_ToolbarLayout";
+}
+
+<div class="container">
+
+    @using (Html.BeginForm("JobGroupDefine", "General", FormMethod.Post, new { id = "FormJobGroupDefine", @class = "form" }))
+    {
+        
+    <div class="row">
+        <div class="col-6">
+            <div class="col-12 col-justify-content-right">
+                @(Html.Kendo().NumericTextBoxFor(model => model.JobGroupDefineCode)
+                        .Placeholder("کد گروه شغلی")
+                        .Label(label => label
+                            .Content("کد گروه شغلی")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+                        .Min(0)
+                        .Format("n0")
+                    )
+            </div>
+            <div class="col-12 col-justify-content-right">
+                @(Html.Kendo().TextBoxFor(model => model.JobGroupDefineName)
+                        .Placeholder("نام گروه شغلی")
+                        .Label(label => label
+                            .Content("نام گروه شغلی")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width: 100%;font-family:Vazir,Tahoma;font-size:12px" })
+
+                    )
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="col-12 col-justify-content-right">
+                @(Html.Kendo().Grid(Model.JobModels)
+                    .Name("GridJobGroupJob")
+                    .Columns(columns =>
+                    {
+
+                        columns.Bound(p => p.JobCode).Title("کد شغل").Width(150).HeaderHtmlAttributes(new { style = "text-align:center" }).HtmlAttributes(new { style = "text-align:center", type = "UserFullName" });
+                        columns.Bound(p => p.JobName).Title("نام شغل").Width(300).HeaderHtmlAttributes(new { style = "text-align:center" }).HtmlAttributes(new { style = "text-align:center", type = "UserFullName" });
+                        columns.Bound(p => p.JobId).Title("Id").Width(1).HeaderHtmlAttributes(new { style = "display:none" }).HtmlAttributes(new { style = "display:none", type = "JobId" });
+
+                    })
+                    .Pageable(pageable => pageable
+                                      .Refresh(true)
+                                      .PageSizes(true)
+                                      .ButtonCount(5))
+                    .Sortable()
+                    .Selectable(selectable => selectable.Mode(GridSelectionMode.Single))
+                    .PersistSelection(true)
+                    .Filterable(ftb => ftb.Mode(GridFilterMode.Menu))
+                    //.Events(events => events.DataBound("onDataBound"))
+                    .DataSource(dataSource => dataSource
+                        .Ajax()
+                        .PageSize(5)
+                        .ServerOperation(false)
+                        ).HtmlAttributes(new { style = "font-family:Vazir,Tahoma;font-size:12px" })
+            )
+            </div>
+        </div>
+        
+        
+        @Html.HiddenFor(model => model.JobGroupDefineId)
+    </div>
+
+    }
+
+
+
+
+
+</div>
+
+
+@section Scripts {
+
+
+
+    <script>
+        var ViewName = "JobGroupDefine";
+        $(document).ready(function (e) {
+
+            $("span.k-floating-label-container").css("width", "100%");
+
+            $("#Btn" + ViewName + "Save").click(function (e) {
+
+                Save("close");
+
+            });
+
+            $("#Btn" + ViewName + "SaveAndContinue").click(function (e) {
+
+                Save("continue");
+
+            });
+
+
+            $("#Btn" + ViewName + "SaveAndNew").click(function (e) {
+
+                Save("new");
+
+            });
+
+
+            $("#Btn" + ViewName + "Jobs").click(function (e) {
+                var JobGroupId = 0;
+                var Id = 0;
+                if ($("#JobGroupDefineId").val() != "" && $("#JobGroupDefineId").val() > 0) {
+                    JobGroupId = $("#JobGroupDefineId").val();
+                    
+                    showWindow("تعریف شغل", "General/Jobs",  JobGroupId, true, "medium", refreshJobGroupDefine);
+                }
+                else {
+                    showNotification("هشدار", "لطفا ابتدا گروه شغلی را ثبت نمایید", "error");
+                }
+
+
+            });
+
+            
+
+        });
+
+        
+
+        function Save(action) {
+
+
+            var valdata = $("#FormJobGroupDefine").serialize();
+
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("SaveJobGroup")",
+                data: valdata,
+                dataType: "json",
+                success: function (data) {
+
+                    showNotification("ذخیره گروه شغلی", data.ResultMessage, data.ResultType);
+                    Id = data.Id;
+                    if (data.ResultType == "success") {
+                        if (action == "new") {
+                            $("span#GeneralJobGroupDefine_BtnClose").click();
+                            Id = 0;
+                            showWindow("تعریف گروه جدید", "General/JobGroupDefine", Id, true, "medium", refreshJobGroupDefine);
+                        }
+                        else if (action == "continue") {
+                            $("span#GeneralJobGroupDefine_BtnClose").click();
+
+                            showWindow("تعریف گروه جدید", "General/JobGroupDefine", Id, true, "medium", refreshJobGroupDefine);
+                        }
+                        else {
+                            $("span#GeneralJobGroupDefine_BtnClose").click();
+                        }
+                    }
+                },
+                error: function (req, status, error) {
+                    showNotification("ذخیره گروه کاربری", error, "error");
+
+                }
+            });
+
+        }
+
+
+        function refreshJobGroupDefine() {
+            
+            $("span#GeneralJobGroupDefine_BtnRefresh").click();
+            var tabStrip = $("#tabstrip").kendoTabStrip().data("kendoTabStrip");
+            tabStrip.reload("li[dialogName=GeneralJobGroupDefine]");
+            
+        }
+
+
+
+    </script>
+}

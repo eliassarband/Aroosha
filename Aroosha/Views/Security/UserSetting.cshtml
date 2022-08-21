@@ -1,0 +1,146 @@
+﻿@model Aroosha.Models.UserSettingModel
+
+@{
+    Layout = "_ToolbarLayout";
+}
+
+@{
+    IEnumerable<BasicInformationForComboModel> HomeTypeComboData = ViewData["HomeTypeComboData"] as IEnumerable<BasicInformationForComboModel>;
+}
+
+
+<div class="container" style="font-family:Vazir,Tahoma;font-size:12px">
+
+    @using (Html.BeginForm("UserSetting", "Security", FormMethod.Post, new { id = "FormUserSetting", @class = "form" }))
+    {
+        <div class="row">
+
+            <div class="col-6 col-justify-content-right">
+                @(Html.Kendo().TextBoxFor(model => model.UserFullName)
+                        .Placeholder("نام و نام خانوادگی کاربر")
+                        .Readonly(true)
+                        .Label(label => label
+                            .Content("نام و نام خانوادگی کاربر")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+
+                    )
+            </div>
+            <div class="col-6 col-justify-content-right">
+                @(Html.Kendo().TextBoxFor(model => model.Username)
+                            .Placeholder("نام کاربری")
+                            .Readonly(true)
+                            .HtmlAttributes(new { style = "width:100%;font-size:12px;font-family:Vazir,Tahoma;" })
+                            .Label(label => label
+                                .Content("نام کاربری")
+                                .Floating(true)
+                            )
+                            )
+            </div>
+            <div class="col-12 col-justify-content-right">
+                <span data-role="floatinglabel" class="k-floating-label-container k-state-focused" style="width: 90%;">
+                    <label class="k-label k-input-label" for="HomeTypeId">نوع صفحه اصلی</label>
+                    <span class="k-widget k-numerictextbox" style="width: 100%; font-family: Vazir, Tahoma; font-size: 12px;">
+                        <span class="k-numeric-wrap k-state-default">
+                            @(Html.Kendo().ComboBoxFor(model => model.HomeTypeId)
+                          .HtmlAttributes(new { style = "width: 100%;font-family:Vazir,Tahoma;font-size:12px" })
+                          .Placeholder("نوع صفحه اصلی")
+                          //.DataTextField("Name")
+                          //.DataValueField("Id")
+                          .Filter(FilterType.Contains)
+                          .AutoBind(true)
+                          .Items(items =>
+                          {
+                              foreach (var item in HomeTypeComboData)
+                              {
+
+                                  items.Add()
+                                  .Text(item.Name)
+                                  .Value(item.Id.ToString());
+
+                              }
+                          })
+                    )
+                        </span>
+                    </span>
+                </span>
+            </div>
+           
+           
+
+        </div>
+
+
+        @Html.HiddenFor(model => model.Id)
+        @Html.HiddenFor(model => model.UserId)
+
+    }
+
+</div>
+
+@section Scripts {
+
+
+
+    <script>
+        var ViewName = "UserSetting";
+        $(document).ready(function (e) {
+
+            $("span.k-floating-label-container").css("width", "100%");
+
+            $("#Btn" + ViewName + "Save").click(function (e) {
+
+                Save("close");
+
+            });
+
+
+
+
+        });
+
+
+
+        function Save(action) {
+
+
+            var valdata = $("#FormUserSetting").serialize();
+
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("SaveUserSetting")",
+                data: valdata,
+                dataType: "json",
+                success: function (data) {
+
+                    showNotification("تنظیمات کاربری", data.ResultMessage, data.ResultType);
+                    Id = data.Id;
+                    if (data.ResultType == "success") {
+
+                        refreshUserSetting();
+                    }
+                },
+                error: function (req, status, error) {
+                    showNotification("تنظیمات کاربری", error, "error");
+
+                }
+            });
+
+        }
+
+
+        function refreshUserSetting() {
+
+            $("span#SecurityUserSetting_BtnRefresh").click();
+            var tabStrip = $("#tabstrip").kendoTabStrip().data("kendoTabStrip");
+            tabStrip.reload("li[dialogName=SecurityUserSetting]");
+
+        }
+
+
+
+    </script>
+}
+
+

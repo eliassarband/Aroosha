@@ -1,0 +1,168 @@
+﻿@model Aroosha.Models.CustomerCardDefineModel
+
+@{
+    Layout = "_ToolbarLayout";
+}
+
+
+
+
+
+<div class="container" style="font-family:Vazir,Tahoma;font-size:12px">
+    
+        @using (Html.BeginForm("CustomerCardDefine", "Market", FormMethod.Post, new { id = "FormCustomerCardDefine", @class = "form" }))
+        {
+    <div class="row">
+        <div class="col-6 col-justify-content-right">
+            @(Html.Kendo().TextBoxFor(model => model.CustomerCardDefineCustomerName)
+                        .Placeholder("مشتری")
+                        .Readonly(true)
+                        .Label(label => label
+                            .Content("مشتری")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+
+                    )
+        </div>
+        <div class="col-6 col-justify-content-right">
+            @(Html.Kendo().TextBoxFor(model => model.CustomerCardDefineCardCode)
+                        .Placeholder("شماره کارت عضویت")
+                        .Label(label => label
+                            .Content("شماره کارت عضویت")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+
+                    )
+        </div>
+        <div class="col-6 col-justify-content-right">
+            @(Html.Kendo().MaskedTextBoxFor(model => model.CustomerCardDefineStartDate)
+                        .Label(label => label
+                            .Content("تاریخ شروع")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+                        .Mask("####/##/##")
+                    )
+        </div>
+        <div class="col-6 col-justify-content-right">
+            @(Html.Kendo().MaskedTextBoxFor(model => model.CustomerCardDefineEndDate)
+                        .Label(label => label
+                            .Content("تاریخ پایان")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+                        .Mask("####/##/##")
+                    )
+        </div>
+        <div class="col-6 col-justify-content-right">
+            <label class="k-label k-checkbox-label" for="CustomerCardDefineActive">وضعیت کارت عضویت</label>
+            @(Html.Kendo().SwitchFor(model => model.CustomerCardDefineActive)
+                            .Name("Active")
+                            .Messages(c => c.Checked("فعال").Unchecked("غیرفعال"))
+                )
+
+        </div>
+    </div>
+            @Html.HiddenFor(model => model.CustomerCardDefineId)
+            @Html.HiddenFor(model => model.CustomerCardDefineCustomerId)
+            
+        }
+
+
+    
+
+
+            </div>
+
+            @section Scripts {
+
+
+
+                <script>
+        var ViewName = "CustomerCardDefine";
+        $(document).ready(function (e) {
+
+            $("span.k-floating-label-container").css("width", "100%");
+
+            $("#Btn" + ViewName + "Save").click(function (e) {
+
+                Save("close");
+
+            });
+
+            $("#Btn" + ViewName + "SaveAndContinue").click(function (e) {
+
+                Save("continue");
+
+            });
+
+
+            $("#Btn" + ViewName + "SaveAndNew").click(function (e) {
+
+                Save("new");
+
+            });
+
+
+
+
+
+        });
+
+
+
+        function Save(action) {
+
+
+            var valdata = $("#FormCustomerCardDefine").serialize();
+
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("SaveCustomerCard")",
+                data: valdata,
+                dataType: "json",
+                success: function (data) {
+
+                    showNotification("ذخیره کارت عضویت", data.ResultMessage, data.ResultType);
+                    Id = data.Id;
+                    if (data.ResultType == "success") {
+
+                        if (action == "new") {
+                            $("span#MarketCustomerCardDefine_BtnClose").click();
+                            Id = 0;
+                            showWindow("تعریف کارت عضویت جدید", "Market/CustomerCardDefine", Id, true, "medium", refreshCustomerCardDefine);
+                        }
+                        else if (action == "continue") {
+                            $("span#MarketShopDefine_BtnClose").click();
+
+                            showWindow("تعریف کارت عضویت جدید", "Market/CustomerCardDefine", Id, true, "medium", refreshCustomerCardDefine);
+                        }
+                        else {
+                            $("span#MarketCustomerCardDefine_BtnClose").click();
+                        }
+                    }
+                },
+                error: function (req, status, error) {
+                    showNotification("ذخیره کارت عضویت", error, "error");
+
+                }
+            });
+
+        }
+
+
+        function refreshCustomerCardDefine() {
+
+            $("span#MarketCustomerCardDefine_BtnRefresh").click();
+            var tabStrip = $("#tabstrip").kendoTabStrip().data("kendoTabStrip");
+            tabStrip.reload("li[dialogName=MarketCustomerCardDefine]");
+        }
+
+
+
+                </script>
+            }
+
+

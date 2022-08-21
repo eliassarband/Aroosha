@@ -1,0 +1,175 @@
+﻿@model Aroosha.Models.ShopGroupDefineModel
+
+@{
+    Layout = "_ToolbarLayout";
+}
+
+<div class="container" style="font-family:Vazir,Tahoma;font-size:12px">
+    
+        @using (Html.BeginForm("ShopGroupDefine", "Market", FormMethod.Post, new { id = "FormShopGroupDefine", @class = "form" }))
+        {
+            <div class="row">
+                <div class="col-6 col-justify-content-right">
+                    @(Html.Kendo().NumericTextBoxFor(model => model.ShopGroupDefineCode)
+                        .Placeholder("کد گروه غرفات")
+                        .Label(label => label
+                            .Content("کد گروه غرفات")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+                        .Min(0)
+                        .Format("n0")
+                    )
+                </div>
+                <div class="col-6 col-justify-content-right">
+                    @(Html.Kendo().TextBoxFor(model => model.ShopGroupDefineName)
+                        .Placeholder("نام گروه غرفات")
+                        .Label(label => label
+                            .Content("نام گروه غرفات")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+
+                    )
+                </div>
+                <div class="col-9 col-justify-content-right">
+                    @(Html.Kendo().TextBoxFor(model => model.ShopGroupDefineDescription)
+                        .Placeholder("توضیحات")
+                        .Label(label => label
+                            .Content("توضیحات")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+
+                    )
+                </div>
+                <div class="col-3 col-justify-content-right" style="font-family:Vazir,Tahoma;font-size:16px;">
+
+                    @(Html.Kendo().TextBoxFor(model => model.ShopGroupDefineShopCount)
+                        .Placeholder("تعدا غرفات")
+                        .Readonly(true)
+                        .Label(label => label
+                            .Content("تعداد غرفات")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+
+                    )
+
+                </div>
+            </div>
+            @Html.HiddenFor(model => model.ShopGroupDefineId)
+
+           
+        }
+
+
+
+
+
+            </div>
+
+
+            @section Scripts {
+
+
+
+                <script>
+        var ViewName = "ShopGroupDefine";
+        $(document).ready(function (e) {
+
+            $("span.k-floating-label-container").css("width", "100%");
+
+            $("#Btn" + ViewName + "Save").click(function (e) {
+
+                Save("close");
+
+            });
+
+            $("#Btn" + ViewName + "SaveAndContinue").click(function (e) {
+
+                Save("continue");
+
+            });
+
+
+            $("#Btn" + ViewName + "SaveAndNew").click(function (e) {
+
+                Save("new");
+
+            });
+
+
+            $("#Btn" + ViewName + "Shops").click(function (e) {
+                var ShopGroupId = 0;
+                var Id = 0;
+                if ($("#ShopGroupDefineId").val() != "" && $("#ShopGroupDefineId").val() > 0) {
+                    ShopGroupId = $("#ShopGroupDefineId").val();
+
+                    showWindow("غرفات", "Market/Shops",  ShopGroupId, true, "medium", refreshShopGroupDefine);
+                }
+                else {
+                    showNotification("هشدار", "لطفا ابتدا گروه غرفات را ثبت نمایید", "error");
+                }
+
+
+            });
+
+
+
+        });
+
+
+
+        function Save(action) {
+
+
+            var valdata = $("#FormShopGroupDefine").serialize();
+
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("SaveShopGroup")",
+                data: valdata,
+                dataType: "json",
+                success: function (data) {
+
+                    showNotification("ذخیره گروه غرفات", data.ResultMessage, data.ResultType);
+                    Id = data.Id;
+                    if (data.ResultType == "success") {
+                        if (action == "new") {
+                            $("span#MarketShopGroupDefine_BtnClose").click();
+                            Id = 0;
+                            showWindow("تعریف گروه جدید", "Market/ShopGroupDefine", Id, true, "medium", refreshShopGroupDefine);
+                        }
+                        else if (action == "continue") {
+                            $("span#MarketShopGroupDefine_BtnClose").click();
+
+                            showWindow("تعریف گروه جدید", "Market/ShopGroupDefine", Id, true, "medium", refreshShopGroupDefine);
+                        }
+                        else {
+                            $("span#MarketShopGroupDefine_BtnClose").click();
+                        }
+                    }
+
+                },
+                error: function (req, status, error) {
+                    showNotification("ذخیره گروه غرفات", error, "error");
+
+                }
+            });
+
+        }
+
+
+                    function refreshShopGroupDefine() {
+
+            $("span#MarketShopGroupDefine_BtnRefresh").click();
+            var tabStrip = $("#tabstrip").kendoTabStrip().data("kendoTabStrip");
+            tabStrip.reload("li[dialogName=MarketShopGroupDefine]");
+
+        }
+
+
+
+                </script>
+            }

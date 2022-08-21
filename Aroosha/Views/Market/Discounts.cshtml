@@ -1,0 +1,152 @@
+﻿@model IEnumerable<Aroosha.Models.DiscountModel>
+
+@{
+    Layout = "_ToolbarLayout";
+}
+
+
+<div id="container">
+
+
+    <div class="row">
+        <div class="col-12">
+            @(Html.Kendo().Grid(Model)
+                    .Name("GridDiscount")
+                    .Columns(columns =>
+                    {
+
+                        columns.Bound(p => p.DiscountCode).Title("کد تخفیف").Width(70).HeaderHtmlAttributes(new { style = "text-align:center" }).HtmlAttributes(new { style = "text-align:center" });
+                        columns.Bound(p => p.DiscountName).Title("عنوان تخفیف").Width(150).HeaderHtmlAttributes(new { style = "text-align:center" }).HtmlAttributes(new { style = "text-align:center" });
+                        columns.Bound(p => p.DiscountDefaultPercent).Title("درصد تخفیف").Width(70).HeaderHtmlAttributes(new { style = "text-align:center" }).HtmlAttributes(new { style = "text-align:center" });
+                        columns.Bound(p => p.DiscountDefaultPrice).Title("مبلغ تخفیف").Width(100).HeaderHtmlAttributes(new { style = "text-align:center" }).HtmlAttributes(new { style = "text-align:right" });
+                        columns.Bound(p => p.DiscountStartDate).Title("تاریخ شروع").Width(80).HeaderHtmlAttributes(new { style = "text-align:center" }).HtmlAttributes(new { style = "text-align:right" });
+                        columns.Bound(p => p.DiscountEndDate).Title("تاریخ پایان").Width(80).HeaderHtmlAttributes(new { style = "text-align:center" }).HtmlAttributes(new { style = "text-align:right" });
+                        columns.Bound(p => p.DiscountActive).Title("وضعیت تخفیف").Width(50).HeaderHtmlAttributes(new { style = "text-align:center" }).HtmlAttributes(new { style = "text-align:center" }).ClientTemplate("<span id='badge_#=DiscountId#' class='badgeActiveStatus_#=DiscountActive#'></span>");
+                        columns.Bound(p => p.DiscountId).Title("Id").Width(1).HeaderHtmlAttributes(new { style = "display:none" }).HtmlAttributes(new { style = "display:none", type = "DiscountId" });
+
+                    })
+                    .Pageable(pageable => pageable
+                                      .Refresh(true)
+                                      .PageSizes(true)
+                                      .ButtonCount(5))
+                    .Sortable()
+                    .Selectable(selectable => selectable.Mode(GridSelectionMode.Single))
+                    .PersistSelection(true)
+                    .Filterable(ftb => ftb.Mode(GridFilterMode.Menu))
+                    //.Events(events => events.DataBound("onDataBound"))
+                    .DataSource(dataSource => dataSource
+                        .Ajax()
+                        .PageSize(10)
+                        .ServerOperation(false)
+                        ).HtmlAttributes(new { style = "font-family:Vazir,Tahoma;font-size:12px" })
+                )
+        </div>
+
+    </div>
+
+
+</div>
+
+@section Scripts {
+
+
+
+    <script>
+        var ViewName = "Discounts";
+        $(document).ready(function (e) {
+
+
+
+            $(".badgeActiveStatus_true").kendoBadge({
+                themeColor: 'success',
+                text: 'فعال',
+            });
+
+            $(".badgeActiveStatus_false").kendoBadge({
+                themeColor: 'error',
+                text: 'غیرفعال',
+            });
+
+            $("#Btn"+ViewName+"New").click(function (e) {
+                showWindow("تعریف تخفیف جدید", "Market/DiscountDefine", "0", true, "medium", refreshDiscounts);
+
+            });
+
+            $("#Btn"+ViewName+"Edit").click(function (e) {
+
+                var selectedItem = $("#GridDiscount tr.k-state-selected")
+                var Id = 0;
+                if ($(selectedItem).length == 0) {
+
+                    showNotification("هشدار", "لطفا ابتدا یک سطر را انتخاب نمایید", "error");
+
+                }
+                else {
+                    Id = $(selectedItem).find("td[type=DiscountId]").html();
+                    showWindow("ویرایش تخفیف", "Market/DiscountDefine", Id, true, "medium", refreshDiscounts);
+                }
+
+
+
+            });
+
+
+             $("#Btn"+ViewName+"Delete").click(function (e) {
+
+                 var selectedItem = $("#GridDiscount tr.k-state-selected")
+                if ($(selectedItem).length == 0) {
+
+                    showNotification("هشدار", "لطفا ابتدا یک سطر را انتخاب نمایید", "error");
+
+                }
+                else {
+
+                    showConfirm("حذف تخفیف", "آیا جهت حذف تخفیف انتخاب شده مطمئن هستید؟", deleteUser);
+
+                }
+
+
+
+            });
+
+        });
+
+        function deleteUser() {
+            var selectedItem = $("#GridDiscount tr.k-state-selected");
+            var Id = $(selectedItem).find("td[type=DiscountId]").html();
+
+           $.ajax({
+                type: "POST",
+                url: "@Url.Action("DeleteDiscount")",
+                data: {Id: Id},
+                dataType: "json",
+               success: function (data) {
+
+                   showNotification("حذف تخفیف", data.ResultMessage, data.ResultType);
+                   
+                   if (data.ResultType == "success") {
+                       
+                       refreshDiscounts();
+
+                   }
+                },
+               error: function (req, status, error) {
+                    showNotification("حذف تخفیف", error, "error");
+
+                }
+            });
+        }
+
+
+        function refreshDiscounts() {
+            
+            $("span#MarketDiscounts_BtnRefresh").click();
+            var tabStrip = $("#tabstrip").kendoTabStrip().data("kendoTabStrip");
+            tabStrip.reload("li[dialogName=MarketDiscounts]");
+
+        }
+
+
+
+    </script>
+}

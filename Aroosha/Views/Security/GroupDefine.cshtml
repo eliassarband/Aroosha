@@ -1,0 +1,190 @@
+﻿@model Aroosha.Models.GroupDefineModel
+
+@{
+    Layout = "_ToolbarLayout";
+}
+
+<div class="container" style="font-family:Vazir,Tahoma;font-size:12px">
+
+    @using (Html.BeginForm("GroupDefine", "Security", FormMethod.Post, new { id = "FormGroupDefine", @class = "form" }))
+    {
+        <div class="row">
+            <div class="col-6 col-justify-content-right">
+                @(Html.Kendo().TextBoxFor(model => model.GroupDefineName)
+                        .Placeholder("نام گروه")
+                        .Label(label => label
+                            .Content("نام گروه")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+
+                    )
+            </div>
+            <div class="col-6 col-justify-content-right">
+                @(Html.Kendo().Grid(Model.GroupUserModels)
+                    .Name("GridGroupUsers")
+                    .Columns(columns =>
+                    {
+                        columns.Bound(p => p.GroupUserSelected).ClientTemplate(
+                            "<input type='checkbox' value='#= GroupUserId #' " +
+                                "# if (GroupUserSelected) { #" +
+                                    "checked='checked'" +
+                                "# } #" +
+                            "/>"
+                        ).Title("انتخاب").Width(50).HeaderHtmlAttributes(new { style = "text-align:center" }).HtmlAttributes(new { style = "text-align:center" , type = "GroupUserSelected" }); ;
+                        columns.Bound(p => p.GroupUserFullName).Title("نام کاربر").Width(200).HeaderHtmlAttributes(new { style = "text-align:center" }).HtmlAttributes(new { style = "text-align:center", type = "UserFullName" });
+                        columns.Bound(p => p.GroupUserId).Title("Id").Width(1).HeaderHtmlAttributes(new { style = "display:none" }).HtmlAttributes(new { style = "display:none", type = "GroupUserId" });
+                        columns.Bound(p => p.GroupUserUserId).Title("UserId").Width(1).HeaderHtmlAttributes(new { style = "display:none" }).HtmlAttributes(new { style = "display:none", type = "GroupUserUserId" });
+                        columns.Bound(p => p.GroupId).Title("GroupId").Width(1).HeaderHtmlAttributes(new { style = "display:none" }).HtmlAttributes(new { style = "display:none", type = "GroupId" });
+                    })
+                    .Pageable(pageable => pageable
+                                      .Refresh(true)
+                                      .PageSizes(true)
+                                      .ButtonCount(5))
+                    .Sortable()
+                    .Selectable(selectable => selectable.Mode(GridSelectionMode.Single))
+                    .PersistSelection(true)
+                    .Filterable(ftb => ftb.Mode(GridFilterMode.Menu))
+                    //.Events(events => events.DataBound("onDataBound"))
+                    .DataSource(dataSource => dataSource
+                        .Ajax()
+                        .PageSize(5)
+                        .ServerOperation(false)
+                        ).HtmlAttributes(new { style = "font-family:Vazir,Tahoma;font-size:12px" })
+            )
+            </div>
+           
+        </div>
+        @Html.HiddenFor(model => model.GroupDefineId)
+        
+    }
+
+
+
+
+
+</div>
+
+
+            @section Scripts {
+
+
+                <script>
+        var Id = 0;
+        var ViewName = "GroupDefine";
+        $(document).ready(function (e) {
+
+            $("span.k-floating-label-container").css("width", "100%");
+
+            $("#Btn"+ViewName+"Save").click(function (e) {
+
+                Save("close");
+
+            });
+
+            $("#Btn"+ViewName+"SaveAndContinue").click(function (e) {
+
+                Save("continue");
+
+            });
+
+
+            $("#Btn"+ViewName+"SaveAndNew").click(function (e) {
+
+                Save("new");
+
+            });
+
+            $("#Btn"+ViewName+"GroupAccess").click(function (e) {
+
+                var Id = $("#GroupDefineId").val();
+
+                if (Id == 0) {
+
+                    showNotification("هشدار", "لطفا ابتدا گروه را ذخیره نمایید", "error");
+
+                }
+                else {
+
+                    showWindow("مدیریت دسترسی گروه های کاربری", "Security/GroupAccess", Id, true,"medium", refreshGroupDefine);
+                }
+
+
+            });
+
+        });
+
+        function Save(action) {
+
+            var viewData = {
+                GroupUserModels: []
+            };
+            viewData.GroupDefineId = $("input#GroupDefineId").val();
+            viewData.GroupDefineName = $("input#GroupDefineName").val();
+            viewData.GroupDefineUserCount = $("div#GridGroupUsers tbody tr").length;
+
+
+            $('div#GridGroupUsers tbody tr').each(function () {
+
+                var jsonData = {};
+                jsonData["GroupUserId"] = $(this).find('[type=GroupUserId]').text();
+                jsonData["GroupUserUserId"] = $(this).find('[type=GroupUserUserId]').text();
+                jsonData["GroupUserFullName"] = $(this).find('[type=GroupUserFullName]').text();
+                jsonData["GroupId"] = $(this).find('[type=GroupId]').text();
+                jsonData["GroupName"] = $("input#Name").val();
+                if ($(this).find('[type=GroupUserSelected] input[type=checkbox]').is(':checked'))
+                    jsonData["GroupUserSelected"] = true;
+                else
+                    jsonData["GroupUserSelected"] = false;
+                viewData.GroupUserModels.push(jsonData);
+             });
+
+            //alert(JSON.stringify(viewData));
+            //var valdata = $("#FormGroupDefine").serialize();
+
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("SaveGroup")",
+                data: viewData,
+                dataType: "json",
+                success: function (data) {
+
+                    showNotification("ذخیره گروه", data.ResultMessage, data.ResultType);
+                    Id = data.Id;
+                    if (data.ResultType == "success") {
+                        if (action == "new") {
+                            $("span#SecurityGroupDefine_BtnClose").click();
+                            Id = 0;
+                            showWindow("تعریف گروه جدید", "Security/GroupDefine", Id, true, "medium", refreshGroupDefine);
+                        }
+                        else if (action == "continue") {
+                            $("span#SecurityGroupDefine_BtnClose").click();
+
+                            showWindow("تعریف گروه جدید", "Security/GroupDefine", Id, true, "medium", refreshGroupDefine);
+                        }
+                        else {
+                            $("span#SecurityGroupDefine_BtnClose").click();
+                        }
+                    }
+                },
+                error: function (req, status, error) {
+                    showNotification("ذخیره گروه", error, "error");
+
+                }
+            });
+
+        }
+
+                    function refreshGroupDefine() {
+
+                $("span#SecurityGroupDefine_BtnRefresh").click();
+                var tabStrip = $("#tabstrip").kendoTabStrip().data("kendoTabStrip");
+                tabStrip.reload("li[dialogName=SecurityGroupDefine]");
+
+            }
+
+
+                </script>
+
+
+            }

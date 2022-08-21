@@ -1,0 +1,151 @@
+﻿@model Aroosha.Models.PrintTemplateModel
+@using Stimulsoft.Report.Mvc;
+
+@{
+    Layout = "_ToolbarLayout";
+}
+
+<input type="button" value="بستن فرم طراحی" id="btnDesign" style="position:absolute;z-index:999999999999;top:10px;right:50px" />
+<div class="container">
+
+    @using (Html.BeginForm("PrintTemplate", "General", FormMethod.Post, new { id = "FormPrintTemplate", @class = "form" }))
+    {
+
+    <div class="row">
+        <div class="col-6 col-justify-content-right">
+            @(Html.Kendo().TextBoxFor(model => model.Code)
+                        .Placeholder("کد")
+                        .Label(label => label
+                            .Content("کد")
+                            .Floating(true)
+                        )
+                        .Readonly(true)
+                        .HtmlAttributes(new { style = "width: 100%;font-family:Vazir,Tahoma;font-size:12px" })
+
+                    )
+        </div>
+        <div class="col-6 col-justify-content-right">
+            @(Html.Kendo().TextBoxFor(model => model.Name)
+                        .Placeholder("نام")
+                        .Label(label => label
+                            .Content("نام")
+                            .Floating(true)
+                        )
+                        .Readonly(true)
+                        .HtmlAttributes(new { style = "width: 100%;font-family:Vazir,Tahoma;font-size:12px" })
+
+                    )
+        </div>
+        <div id="divReport" class="col-12 col-justify-content-right" style="height:100vh;display:block;" dir="ltr">
+            @Html.StiNetCoreDesigner(new StiNetCoreDesignerOptions()
+       {
+
+           Actions =
+
+             {
+
+                 GetReport = "GetRentReceiptReport",
+
+                 DesignerEvent = "DesignerRentReceiptEvent",
+
+                 SaveReport = "SaveRentReceiptReport"
+
+             },
+           Behavior = { 
+            SaveReportAsMode=Stimulsoft.Report.Web.StiSaveMode.Hidden
+           }
+
+       })
+
+        </div>
+        @Html.HiddenFor(model => model.Id)
+    </div>
+
+    }
+
+
+
+
+
+</div>
+
+
+@section Scripts {
+
+
+
+    <script>
+        var ViewName = "PrintTemplate";
+        $(document).ready(function (e) {
+
+            $("span.k-floating-label-container").css("width", "100%");
+
+            $("#btnDesign").click(function (e) {
+                $("#divReport").hide();
+                $("#btnDesign").hide();
+            });
+
+
+            $("#Btn" + ViewName + "Design").click(function (e) {
+
+                $("#divReport").show();
+                $("#btnDesign").show();
+            });
+
+
+
+        });
+
+
+
+        function Save(action) {
+
+
+            var valdata = $("#FormJobGroupDefine").serialize();
+
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("SaveJobGroup")",
+                data: valdata,
+                dataType: "json",
+                success: function (data) {
+
+                    showNotification("ذخیره گروه شغلی", data.ResultMessage, data.ResultType);
+                    Id = data.Id;
+                    if (data.ResultType == "success") {
+                        if (action == "new") {
+                            $("span#GeneralJobGroupDefine_BtnClose").click();
+                            Id = 0;
+                            showWindow("تعریف گروه جدید", "General/JobGroupDefine", Id, true, "medium", refreshJobGroupDefine);
+                        }
+                        else if (action == "continue") {
+                            $("span#GeneralJobGroupDefine_BtnClose").click();
+
+                            showWindow("تعریف گروه جدید", "General/JobGroupDefine", Id, true, "medium", refreshJobGroupDefine);
+                        }
+                        else {
+                            $("span#GeneralJobGroupDefine_BtnClose").click();
+                        }
+                    }
+                },
+                error: function (req, status, error) {
+                    showNotification("ذخیره گروه کاربری", error, "error");
+
+                }
+            });
+
+        }
+
+
+        function refreshPrintTemplate() {
+
+            $("span#GeneralPrintTemplate_BtnRefresh").click();
+            var tabStrip = $("#tabstrip").kendoTabStrip().data("kendoTabStrip");
+            tabStrip.reload("li[dialogName=GeneralPrintTemplate]");
+
+        }
+
+
+
+    </script>
+}

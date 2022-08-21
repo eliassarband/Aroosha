@@ -1,0 +1,168 @@
+﻿@model Aroosha.Models.JobDefineModel
+
+@{
+    Layout = "_ToolbarLayout";
+}
+
+@{
+    IEnumerable<JobGroupModel> JobGroupsComboData = ViewData["JobGroupsComboData"] as IEnumerable<JobGroupModel>;
+}
+
+<div class="container" style="font-family:Vazir,Tahoma;font-size:12px">
+    <div class="row">
+        @using (Html.BeginForm("JobDefine", "General", FormMethod.Post, new { id = "FormJobDefine", @class = "form" }))
+        {
+            <div class="row">
+                <div class="col-12 col-justify-content-right">
+                    <span data-role="floatinglabel" class="k-floating-label-container k-state-focused" style="width: 90%;">
+                        <label class="k-label k-input-label" for="JobGroupId">گروه شغلی</label>
+                        <span class="k-widget k-numerictextbox" style="width: 100%; font-family: Vazir, Tahoma; font-size: 12px;">
+                            <span class="k-numeric-wrap k-state-default">
+                                @(Html.Kendo().ComboBoxFor(model => model.JobGroupId)
+                          .HtmlAttributes(new { style = "width: 100%;font-family:Vazir,Tahoma;font-size:12px" })
+                          .Placeholder("گروه شغلی")
+                          //.DataTextField("Name")
+                          //.DataValueField("Id")
+                          .Filter(FilterType.Contains)
+                          .AutoBind(true)
+                          .Items(items =>
+                          {
+                              foreach (var item in JobGroupsComboData)
+                              {
+
+                                  items.Add()
+                                  .Text(item.JobGroupName)
+                                  .Value(item.JobGroupId.ToString());
+
+                              }
+                          })
+                    )
+                            </span>
+                        </span>
+                    </span>
+                </div>
+                <div class="col-6 col-justify-content-right">
+                    @(Html.Kendo().NumericTextBoxFor(model => model.JobDefineCode)
+                        .Placeholder("کد شغل")
+                        .Label(label => label
+                            .Content("کد شغل")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+                        .Min(0)
+                        .Format("n0")
+                    )
+                </div>
+                <div class="col-6 col-justify-content-right">
+                    @(Html.Kendo().TextBoxFor(model => model.JobDefineName)
+                        .Placeholder("نام شغل")
+                        .Label(label => label
+                            .Content("نام شغل")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+
+                    )
+                </div>
+            </div>
+            @Html.HiddenFor(model => model.JobDefineId)
+            @Html.HiddenFor(model => model.JobGroupId)
+            
+        }
+
+
+    </div>
+
+
+            </div>
+
+            @section Scripts {
+
+
+
+                <script>
+        var ViewName = "JobDefine";
+        $(document).ready(function (e) {
+
+            $("span.k-floating-label-container").css("width", "100%");
+
+            $("#Btn" + ViewName + "Save").click(function (e) {
+
+                Save("close");
+
+            });
+
+            $("#Btn" + ViewName + "SaveAndContinue").click(function (e) {
+
+                Save("continue");
+
+            });
+
+
+            $("#Btn" + ViewName + "SaveAndNew").click(function (e) {
+
+                Save("new");
+
+            });
+
+
+
+
+        });
+
+
+
+        function Save(action) {
+
+
+            var valdata = $("#FormJobDefine").serialize();
+
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("SaveJob")",
+                data: valdata,
+                dataType: "json",
+                success: function (data) {
+
+                    showNotification("ذخیره شغل", data.ResultMessage, data.ResultType);
+                    Id = data.Id;
+                    if (data.ResultType == "success") {
+                        var JobGroupId = $("#JobGroupId").val();
+                        if (action == "new") {
+                            $("span#GeneralJobDefine_BtnClose").click();
+                            Id = 0;
+                            showWindow("تعریف شغل جدید", "General/JobDefine", Id + "/" + JobGroupId, true, "medium", refreshJobDefine);
+                        }
+                        else if (action == "continue") {
+                            $("span#GeneralJobDefine_BtnClose").click();
+
+                            showWindow("تعریف شغل جدید", "General/JobDefine", Id + "/" + JobGroupId, true, "medium", refreshJobDefine);
+                        }
+                        else {
+                            $("span#GeneralJobDefine_BtnClose").click();
+                        }
+                    }
+                },
+                error: function (req, status, error) {
+                    showNotification("ذخیره شغل", error, "error");
+
+                }
+            });
+
+        }
+
+
+        function refreshJobDefine() {
+
+            $("span#GeneralJobDefine_BtnRefresh").click();
+            var tabStrip = $("#tabstrip").kendoTabStrip().data("kendoTabStrip");
+            tabStrip.reload("li[dialogName=GeneralJobDefine]");
+
+        }
+
+
+
+                </script>
+            }
+
+

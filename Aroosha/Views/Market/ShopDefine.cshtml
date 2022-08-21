@@ -1,0 +1,293 @@
+﻿@model Aroosha.Models.ShopDefineModel
+
+@{
+    Layout = "_ToolbarLayout";
+}
+
+@{
+    IEnumerable<BasicInformationForComboModel> ShopTypeComboData = ViewData["ShopTypeComboData"] as IEnumerable<BasicInformationForComboModel>;
+
+    IEnumerable<ShopGroupForComboModel> ShopGroupComboData = ViewData["ShopGroupComboData"] as IEnumerable<ShopGroupForComboModel>;
+
+    IEnumerable<MarketStructureForComboModel> MarketStructureComboData = ViewData["MarketStructureComboData"] as IEnumerable<MarketStructureForComboModel>;
+}
+
+<div class="container" style="font-family:Vazir,Tahoma;font-size:12px">
+    
+        @using (Html.BeginForm("ShopDefine", "Market", FormMethod.Post, new { id = "FormShopDefine", @class = "form" }))
+        {
+            <div class="row">
+                <div class="col-6 col-justify-content-right">
+                    @(Html.Kendo().TextBoxFor(model => model.TenantName)
+                        .Placeholder("بازار")
+                        .Readonly(true)
+                        .Label(label => label
+                            .Content("بازار")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+
+                    )
+                </div>
+                <div class="col-6 col-justify-content-right">
+                    @(Html.Kendo().TextBoxFor(model => model.ShopDefineIdentifier)
+                        .Placeholder("شناسه غرفه")
+                        .Readonly(true)
+                        .Label(label => label
+                            .Content("شناسه غرفه")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+
+                    )
+                </div>
+                <div class="col-6 col-justify-content-right">
+                    @(Html.Kendo().NumericTextBoxFor(model => model.ShopDefineCode)
+                        .Placeholder("کد غرفه")
+                        .Label(label => label
+                            .Content("کد غرفه")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+                        .Min(0)
+                        .Format("n0")
+                    )
+                </div>
+                <div class="col-6 col-justify-content-right">
+                    @(Html.Kendo().TextBoxFor(model => model.ShopDefineName)
+                        .Placeholder("نام غرفه")
+                        .Label(label => label
+                            .Content("نام غرفه")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+
+                    )
+                </div>
+                <div class="col-6 col-justify-content-right">
+                    <span data-role="floatinglabel" class="k-floating-label-container k-state-focused" style="width: 90%;">
+                        <label class="k-label k-input-label" for="ShopDefineTypeId">نوع غرفه</label>
+                        <span class="k-widget k-numerictextbox" style="width: 100%; font-family: Vazir, Tahoma; font-size: 12px;">
+                            <span class="k-numeric-wrap k-state-default">
+                                @(Html.Kendo().ComboBoxFor(model => model.ShopDefineTypeId)
+                      .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px;right:0px" })
+                      .Placeholder("نوع غرفه")
+                      //.DataTextField("Name")
+                      //.DataValueField("Id")
+                      .Filter(FilterType.Contains)
+                      .AutoBind(true)
+                      .Items(items =>
+                      {
+                          foreach (var item in ShopTypeComboData)
+                          {
+
+                              items.Add()
+                              .Text(item.Name)
+                              .Value(item.Id.ToString());
+
+                          }
+                      })
+                )
+                            </span>
+                        </span>
+                    </span>
+                </div>
+                <div class="col-6 col-justify-content-right">
+                    <span data-role="floatinglabel" class="k-floating-label-container k-state-focused" style="width: 90%;">
+                        <label class="k-label k-input-label" for="ShopGroupId">گروه غرفه</label>
+                        <span class="k-widget k-numerictextbox" style="width: 100%; font-family: Vazir, Tahoma; font-size: 12px;">
+                            <span class="k-numeric-wrap k-state-default">
+                                @(Html.Kendo().ComboBoxFor(model => model.ShopGroupId)
+                      .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+                      .Placeholder("گروه غرفه")
+                      //.DataTextField("Name")
+                      //.DataValueField("Id")
+                      .Filter(FilterType.Contains)
+                      .AutoBind(true)
+                      .Items(items =>
+                      {
+                          foreach (var item in ShopGroupComboData)
+                          {
+
+                              items.Add()
+                              .Text(item.Name)
+                              .Value(item.Id.ToString());
+
+                          }
+                      })
+                )
+
+                            </span>
+                        </span>
+                    </span>
+                </div>
+                <div class="col-12 col-justify-content-right">
+                    <span data-role="floatinglabel" class="k-floating-label-container k-state-focused" style="width: 90%;">
+                        <label class="k-label k-input-label" for="ShopDefineMarketStructureId">ساختار</label>
+                        <span class="k-widget k-numerictextbox" style="width: 100%; font-family: Vazir, Tahoma; font-size: 12px;">
+                            <span class="k-numeric-wrap k-state-default">
+                                @(Html.Kendo().ComboBoxFor(model => model.ShopDefineMarketStructureId)
+                      .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+                      .Placeholder("ساختار")
+                      //.DataTextField("Name")
+                      //.DataValueField("Id")
+                      .Filter(FilterType.Contains)
+                      .AutoBind(true)
+                      .Items(items =>
+                      {
+                          foreach (var item in MarketStructureComboData)
+                          {
+
+                              items.Add()
+                              .Text(item.StructureAddress)
+                              .Value(item.Id.ToString());
+
+                          }
+                      })
+                )
+                            </span>
+                        </span>
+                    </span>
+                </div>
+                <div class="col-4 col-justify-content-right">
+                    @(Html.Kendo().TextBoxFor(model => model.ShopDefineLength)
+                        .Placeholder("طول")
+                        .Label(label => label
+                            .Content("طول")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+
+                    )
+                </div>
+                <div class="col-4 col-justify-content-right">
+                    @(Html.Kendo().TextBoxFor(model => model.ShopDefineWidth)
+                        .Placeholder("عرض")
+                        .Label(label => label
+                            .Content("عرض")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+
+
+                    )
+                </div>
+                <div class="col-4 col-justify-content-right">
+                    @(Html.Kendo().TextBoxFor(model => model.ShopDefineArea)
+                        .Placeholder("متراژ غرفه")
+                        .Readonly(true)
+                        .Label(label => label
+                            .Content("متراژ غرفه")
+                            .Floating(true)
+                        )
+                        .HtmlAttributes(new { style = "width:100%;font-family:Vazir,Tahoma;font-size:12px" })
+
+                    )
+                </div>
+                <div class="col-6 col-justify-content-right">
+
+                </div>
+            </div>
+            @Html.HiddenFor(model => model.ShopDefineId)
+            @*@Html.HiddenFor(model => model.ShopDefineTypeId)*@
+            @*@Html.HiddenFor(model => model.ShopGroupId)*@
+            @Html.HiddenFor(model => model.TenantId)
+            @*@Html.HiddenFor(model => model.ShopDefineMarketStructureId)*@
+           
+        }
+
+
+
+
+    </div>
+
+@section Scripts {
+
+
+
+    <script>
+        var ViewName = "ShopDefine";
+        $(document).ready(function (e) {
+
+            $("span.k-floating-label-container").css("width", "100%");
+
+            $("#Btn" + ViewName + "Save").click(function (e) {
+
+                Save("close");
+
+            });
+
+            $("#Btn" + ViewName + "SaveAndContinue").click(function (e) {
+
+                Save("continue");
+
+            });
+
+
+            $("#Btn" + ViewName + "SaveAndNew").click(function (e) {
+
+                Save("new");
+
+            });
+
+
+
+
+        });
+
+
+
+        function Save(action) {
+
+
+            var valdata = $("#FormShopDefine").serialize();
+
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("SaveShop")",
+                data: valdata,
+                dataType: "json",
+                success: function (data) {
+
+                    showNotification("ذخیره عرفه", data.ResultMessage, data.ResultType);
+                    Id = data.Id;
+                    if (data.ResultType == "success") {
+                        
+                        if (action == "new") {
+                            $("span#MarketShopDefine_BtnClose").click();
+                            Id = 0;
+                            showWindow("تعریف غرفه جدید", "Market/ShopDefine", Id, true, "medium", refreshShopDefine);
+                        }
+                        else if (action == "continue") {
+                            $("span#MarketShopDefine_BtnClose").click();
+
+                            showWindow("تعریف غرفه جدید", "Market/ShopDefine", Id, true, "medium", refreshShopDefine);
+                        }
+                        else {
+                            $("span#MarketShopDefine_BtnClose").click();
+                        }
+                    }
+                },
+                error: function (req, status, error) {
+                    showNotification("ذخیره غرفه", error, "error");
+
+                }
+            });
+
+        }
+
+
+        function refreshShopDefine() {
+
+            $("span#MarketShopDefine_BtnRefresh").click();
+            var tabStrip = $("#tabstrip").kendoTabStrip().data("kendoTabStrip");
+            tabStrip.reload("li[dialogName=MarketShopDefine]");
+
+        }
+
+
+
+    </script>
+}
+
+

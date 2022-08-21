@@ -1,0 +1,148 @@
+﻿@model IEnumerable<Aroosha.Models.UserModel>
+
+@{
+    Layout = "_ToolbarLayout";
+}
+
+
+<div id="container">
+    
+
+        <div class="row">
+            <div class="col-12">
+                @(Html.Kendo().Grid(Model)
+                    .Name("GridUser")
+                    .Columns(columns =>
+                    {
+
+                        columns.Bound(p => p.UserCode).Title("کد کاربر").Width(50).HeaderHtmlAttributes(new { style = "text-align:center" }).HtmlAttributes(new { style = "text-align:center" });
+                        columns.Bound(p => p.UserStrCode).Title("کد کاراکتری کاربر").Width(60).HeaderHtmlAttributes(new { style = "text-align:center" }).HtmlAttributes(new { style = "text-align:center" });
+                        columns.Bound(p => p.UserUsername).Title("نام کاربری").Width(100).HeaderHtmlAttributes(new { style = "text-align:center" }).HtmlAttributes(new { style = "text-align:center" });
+                        columns.Bound(p => p.UserFullName).Title("نام و نام خانوادگی کاربر").Width(120).HeaderHtmlAttributes(new { style = "text-align:center" }).HtmlAttributes(new { style = "text-align:right" });
+                        columns.Bound(p => p.UserTenantName).Title("بازار").Width(120).HeaderHtmlAttributes(new { style = "text-align:center" }).HtmlAttributes(new { style = "text-align:right" });
+                        columns.Bound(p => p.UserActive).Title("وضعیت کاربر").Width(50).HeaderHtmlAttributes(new { style = "text-align:center" }).HtmlAttributes(new { style = "text-align:center" }).ClientTemplate("<span id='badge_#=UserId#' class='badgeActiveStatus_#=UserActive#'></span>");
+                        columns.Bound(p => p.UserId).Title("Id").Width(1).HeaderHtmlAttributes(new { style = "display:none" }).HtmlAttributes(new { style = "display:none", type = "UserId" });
+                        columns.Bound(p => p.UserTenantId).Title("TenantId").Width(1).HeaderHtmlAttributes(new { style = "display:none" }).HtmlAttributes(new { style = "display:none", type = "UserTenantId" });
+                    })
+                    .Pageable(pageable => pageable
+                                      .Refresh(true)
+                                      .PageSizes(true)
+                                      .ButtonCount(5))
+                    .Sortable()
+                    .Selectable(selectable => selectable.Mode(GridSelectionMode.Single))
+                    .PersistSelection(true)
+                    .Filterable(ftb => ftb.Mode(GridFilterMode.Menu))
+                    //.Events(events => events.DataBound("onDataBound"))
+                    .DataSource(dataSource => dataSource
+                        .Ajax()
+                        .PageSize(10)
+                        .ServerOperation(false)
+                        ).HtmlAttributes(new { style = "font-family:Vazir,Tahoma;font-size:12px" })
+                )
+            </div>
+            
+        </div>
+        
+    
+</div>
+
+@section Scripts {
+
+    
+
+    <script>
+        var ViewName = "Users";
+        $(document).ready(function (e) {
+            
+            
+
+            $(".badgeActiveStatus_true").kendoBadge({
+                themeColor: 'success',
+                text: 'فعال',
+            });
+
+            $(".badgeActiveStatus_false").kendoBadge({
+                themeColor: 'error',
+                text: 'غیرفعال',
+            });
+
+            $("#Btn"+ViewName+"New").click(function (e) {
+                showWindow("تعریف کاربر جدید", "Security/UserDefine", "0", true, "medium", refreshUsers);
+
+            });
+
+            $("#Btn"+ViewName+"Edit").click(function (e) {
+
+                var selectedItem = $("#GridUser tr.k-state-selected")
+                var Id = 0;
+                if ($(selectedItem).length == 0) {
+
+                    showNotification("هشدار", "لطفا ابتدا یک کاربر را انتخاب نمایید", "error");
+                    
+                }
+                else {
+                    Id = $(selectedItem).find("td[type=UserId]").html();
+                    showWindow("ویرایش کاربر", "Security/UserDefine", Id, true, "medium", refreshUsers);
+                }
+
+
+
+            });
+
+
+             $("#Btn"+ViewName+"Delete").click(function (e) {
+
+                var selectedItem = $("#GridUser tr.k-state-selected")
+                if ($(selectedItem).length == 0) {
+
+                    showNotification("هشدار", "لطفا ابتدا یک کاربر را انتخاب نمایید", "error");
+                    
+                }
+                else {
+
+                    showConfirm("حذف کاربر", "آیا جهت حذف کاربر انتخاب شده مطمئن هستید؟", deleteUser);
+                    
+                }
+
+
+
+            });
+
+        });
+
+        function deleteUser() {
+            var selectedItem = $("#GridUser tr.k-state-selected");
+            var Id = $(selectedItem).find("td[type=UserId]").html();
+
+           $.ajax({
+                type: "POST",
+                url: "@Url.Action("DeleteUser")",
+                data: {Id: Id},
+                dataType: "json",
+               success: function (data) {
+
+                   showNotification("حذف کاربر", data.ResultMessage, data.ResultType);
+                   if (data.ResultType == "success") {
+                       refreshUsers();
+                   }
+                },
+               error: function (req, status, error) {
+                    showNotification("حذف کاربر", error, "error");
+                    
+                }
+            });
+        }
+
+              
+        function refreshUsers() {
+            
+            $("span#SecurityUsers_BtnRefresh").click();
+            var tabStrip = $("#tabstrip").kendoTabStrip().data("kendoTabStrip");
+            tabStrip.reload("li[dialogName=SecurityUsers]");
+            
+        }
+
+
+
+    </script>
+}
